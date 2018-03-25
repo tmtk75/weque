@@ -1,0 +1,29 @@
+version: 0.1
+log:
+  level: debug
+  fields:
+    service: registry
+
+storage:
+    cache:
+        layerinfo: inmemory
+    inmemory:
+    delete:
+        enabled: true
+
+http:
+    addr: :5000
+    secret: placeholder
+    debug:
+        addr: localhost:5001
+
+notifications:
+  endpoints:
+      - name: test
+        disabled: false
+        url: https://3def21d4.ngrok.io/registry
+        headers:
+          x-test: [abc123]
+        timeout: 30s
+        threshold: 5
+        backoff: 3s

@@ -1,0 +1,16 @@
+# dev
+.*.swp
+vendor
+
+# bin
+weque
+traefik
+
+# tmp
+*.out
+*.log
+acme.json
+data
+
+*.txt
+*.json

@@ -1,0 +1,7 @@
+port: 9981
+
+prefix: ""
+
+handlers:
+  repository: ./repository/sleep.sh
+  registry: /dev/null
