@@ -10,7 +10,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type Test struct{}
+type Test struct {
+	Github
+}
 
 func (t *Test) Verify(r *http.Request, body []byte) error {
 	return nil
@@ -25,7 +27,7 @@ func (t *Test) Unmarshal(r *http.Request, body []byte) (*Webhook, error) {
 }
 
 func TestNewHandler(t *testing.T) {
-	ch := make(chan<- *Webhook)
+	ch := make(chan<- *Context)
 	h := NewHandler(&Test{}, ch)
 	s := httptest.NewServer(h)
 	defer s.Close()
@@ -37,5 +39,7 @@ func TestNewHandler(t *testing.T) {
 
 	body, err := ioutil.ReadAll(res.Body)
 	assert.NoError(t, err)
-	assert.Equal(t, "", body)
+
+	expected := []uint8([]byte{0xa})
+	assert.Equal(t, expected, body)
 }

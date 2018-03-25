@@ -8,18 +8,17 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/spf13/viper"
+	"github.com/tmtk75/weque/consumer"
 	"github.com/tmtk75/weque/registry"
 	"github.com/tmtk75/weque/repository"
 )
 
-type Handler func(wh repository.Handler, r *http.Request, raw []byte, body *repository.Webhook) error
-
 type Server struct {
-	events chan *repository.Webhook
+	events chan *repository.Context
 }
 
 func New() *Server {
-	return &Server{events: make(chan *repository.Webhook)}
+	return &Server{events: make(chan *repository.Context)}
 }
 
 func (s *Server) Start() error {
@@ -28,7 +27,7 @@ func (s *Server) Start() error {
 	r.Post("/repository/github", repository.NewHandler(&repository.Github{}, s.events))
 	r.Post("/repository/bitbucket", repository.NewHandler(&repository.Bitbucket{}, s.events))
 
-	go repository.StartConsumer(s.events)
+	go consumer.StartRepositoryConsumer(s.events)
 
 	port := viper.GetInt("port")
 	log.Printf("start listening at %d", port)
@@ -42,7 +41,7 @@ func (s *Server) Start() error {
 }
 
 func Validate() error {
-	for _, key := range []string{repository.KeyHandlerScript, registry.KeyHandlerScript} {
+	for _, key := range []string{consumer.KeyHandlerScriptRepository, registry.KeyHandlerScript} {
 		path := viper.GetString(key)
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			return err

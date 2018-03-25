@@ -1,6 +1,7 @@
 # dev
 .*.swp
 vendor
+credentials
 
 # bin
 weque

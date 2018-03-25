@@ -6,8 +6,17 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/spf13/viper"
 	"github.com/tmtk75/weque"
 )
+
+const (
+	KeySecretToken = "secret_token"
+)
+
+func init() {
+	viper.BindEnv(KeySecretToken, "SECRET_TOKEN")
+}
 
 type Handler interface {
 	/*
@@ -25,6 +34,9 @@ type Handler interface {
 	 */
 	Unmarshal(r *http.Request, body []byte) (*Webhook, error)
 
+	/** */
+	WebhookProvider() WebhookProvider
+
 	/*
 	 * Returns key and value to be stored in a key-value store.
 	 * Designed for consul KV.
@@ -38,7 +50,7 @@ type Handler interface {
 	//EventName(r *http.Request, body []byte, wh *Webhook) string
 }
 
-func NewHandler(wh Handler, events chan<- *Webhook) http.HandlerFunc {
+func NewHandler(h Handler, events chan<- *Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		b, err := ioutil.ReadAll(r.Body)
 		if err != nil {
@@ -46,13 +58,13 @@ func NewHandler(wh Handler, events chan<- *Webhook) http.HandlerFunc {
 			return
 		}
 
-		if err := wh.Verify(r, b); err != nil {
+		if err := h.Verify(r, b); err != nil {
 			log.Printf("%v", string(b))
 			weque.SendError(w, 400, fmt.Sprintf("Failed to verify: %v", err))
 			return
 		}
 
-		if wh.IsPing(r, b) {
+		if h.IsPing(r, b) {
 			msg := fmt.Sprintf("Received pings: %v", r.RequestURI)
 			log.Print(msg)
 			w.WriteHeader(200)
@@ -60,14 +72,17 @@ func NewHandler(wh Handler, events chan<- *Webhook) http.HandlerFunc {
 			return
 		}
 
-		body, err := wh.Unmarshal(r, b)
+		body, err := h.Unmarshal(r, b)
 		if err != nil {
 			weque.SendError(w, 400, fmt.Sprintf("%v", err))
 			return
 		}
 
 		go (func() {
-			events <- body
+			events <- &Context{
+				Webhook:         body,
+				WebhookProvider: h.WebhookProvider(),
+			}
 			log.Printf("queued. delivery: %v, owner: %v, name: %v, pusher: %v", body.Delivery, body.Repository.Owner.Name, body.Repository.Name, body.Pusher.Name)
 		})()
 

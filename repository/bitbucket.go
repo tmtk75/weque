@@ -4,16 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
+	"strings"
+
+	"github.com/spf13/viper"
 )
 
 type Bitbucket struct {
 }
 
-const ENV_SECRET_TOKEN = "SECRET_TOKEN"
-
 func (bb *Bitbucket) Verify(r *http.Request, body []byte) error {
-	token := os.Getenv(ENV_SECRET_TOKEN)
+	token := viper.GetString(KeySecretToken)
 	secret := r.URL.Query().Get("secret")
 	if token != secret {
 		return fmt.Errorf("the given secret token didn't match")
@@ -79,3 +79,28 @@ func (bb *Bitbucket) EventName(r *http.Request, b []byte, wh *Webhook) string {
 	return fmt.Sprintf("bitbucket.%v", wh.Event)
 }
 */
+
+func (s *Bitbucket) WebhookProvider() WebhookProvider {
+	return s
+}
+
+func (s *Bitbucket) RepositoryURL(w *Webhook) string {
+	return fmt.Sprintf("https://bitbucket.org/%s/%s", w.Repository.Owner.Name, w.Repository.Name)
+}
+
+func (s *Bitbucket) CommitURL(w *Webhook) string {
+	return fmt.Sprintf("%s/commits/%s", s.RepositoryURL(w), w.After)
+}
+
+func (s *Bitbucket) CompareURL(w *Webhook) string {
+	return fmt.Sprintf("%s/branches/compare/%s..%s", s.RepositoryURL(w), w.Before, w.After)
+}
+
+func (s *Bitbucket) RefURL(w *Webhook) string {
+	ref := strings.TrimPrefix(w.Ref, "refs/heads/")
+	return fmt.Sprintf("%s/branch/%s", s.RepositoryURL(w), ref)
+}
+
+func (s *Bitbucket) PusherURL(w *Webhook) string {
+	return fmt.Sprintf("https://bitbucket.org/%s", w.Pusher.Name)
+}

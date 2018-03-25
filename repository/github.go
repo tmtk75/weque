@@ -11,8 +11,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"strings"
+
+	"github.com/spf13/viper"
 )
 
 type Github struct {
@@ -33,7 +34,7 @@ func Verify(sign string, b []byte) error {
 	expected, _ := hex.DecodeString(string(sign[4+1 : len(sign)])) // 4+1 is to skip `sha1=`
 	expected = []byte(expected)
 
-	token := os.Getenv("SECRET_TOKEN")
+	token := viper.GetString(KeySecretToken)
 	mac := hmac.New(sha1.New, []byte(token))
 	mac.Write(b)
 	actual := mac.Sum(nil)
@@ -108,3 +109,27 @@ func (s *Github) EventName(r *http.Request, b []byte, wh *Webhook) string {
 	return fmt.Sprintf("github.%v", wh.Event)
 }
 */
+
+func (s *Github) WebhookProvider() WebhookProvider {
+	return s
+}
+
+func (s *Github) RepositoryURL(w *Webhook) string {
+	return fmt.Sprintf("https://github.com/%s/%s", w.Repository.Owner.Name, w.Repository.Name)
+}
+
+func (s *Github) CommitURL(w *Webhook) string {
+	return fmt.Sprintf("%s/commit/%s", s.RepositoryURL(w), w.After)
+}
+
+func (s *Github) CompareURL(w *Webhook) string {
+	return fmt.Sprintf("%s/compare/%s...%s?w=1", s.RepositoryURL(w), w.Before, w.After)
+}
+
+func (s *Github) RefURL(w *Webhook) string {
+	return fmt.Sprintf("%s/tree/%s", s.RepositoryURL(w), w.Ref)
+}
+
+func (s *Github) PusherURL(w *Webhook) string {
+	return fmt.Sprintf("https://github.com/%s", w.Pusher.Name)
+}

@@ -20,8 +20,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/tmtk75/weque/consumer"
 	"github.com/tmtk75/weque/registry"
-	"github.com/tmtk75/weque/repository"
 	"github.com/tmtk75/weque/server"
 )
 
@@ -52,7 +52,7 @@ func init() {
 	viper.BindPFlag("prefix", pflags.Lookup("prefix"))
 
 	pflags.String("repository-handler", "./handlers/repository", "handler script for repository")
-	viper.BindPFlag(repository.KeyHandlerScript, pflags.Lookup("repository-handler"))
+	viper.BindPFlag(consumer.KeyHandlerScriptRepository, pflags.Lookup("repository-handler"))
 
 	pflags.String("registry-handler", "./handlers/registry", "handler script for registry")
 	viper.BindPFlag(registry.KeyHandlerScript, pflags.Lookup("registry-handler"))
