@@ -114,6 +114,14 @@ func (s *Github) WebhookProvider() WebhookProvider {
 	return s
 }
 
+func (s *Github) Name() string {
+	return "github"
+}
+
+func (s *Github) IconURL() string {
+	return "http://cdn.flaticon.com/png/256/25231.png"
+}
+
 func (s *Github) RepositoryURL(w *Webhook) string {
 	return fmt.Sprintf("https://github.com/%s/%s", w.Repository.Owner.Name, w.Repository.Name)
 }

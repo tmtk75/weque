@@ -84,6 +84,15 @@ func (s *Bitbucket) WebhookProvider() WebhookProvider {
 	return s
 }
 
+func (s *Bitbucket) Name() string {
+	return "bitbucket"
+}
+
+func (s *Bitbucket) IconURL() string {
+	//FIXME
+	return "https://www.atlassian.com/dam/jcr:e2a6f06f-b3d5-4002-aed3-73539c56a2eb/Bitbucket@2x-blue.png"
+}
+
 func (s *Bitbucket) RepositoryURL(w *Webhook) string {
 	return fmt.Sprintf("https://bitbucket.org/%s/%s", w.Repository.Owner.Name, w.Repository.Name)
 }

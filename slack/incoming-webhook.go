@@ -66,8 +66,8 @@ status:$status
 		Text:     "something wrong",
 		Attachments: []Attachment{
 			Attachment{
-				AuthorName: "github",
-				AuthorIcon: "http://cdn.flaticon.com/png/256/25231.png",
+				AuthorName: u.Name(),
+				AuthorIcon: u.IconURL(),
 				Color:      "warning",
 				Text:       text.String(),
 			},
