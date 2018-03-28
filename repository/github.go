@@ -79,37 +79,6 @@ func (s *Github) Unmarshal(r *http.Request, b []byte) (*Webhook, error) {
 	return &body, nil
 }
 
-/* suspended for consul
-func (s *Github) NewKeyValue(r *http.Request, b []byte, wh *Webhook) (key string, val []byte, err error) {
-	key = fmt.Sprintf("weque/github/%v/%v/webhooks/%v",
-		wh.Repository.Owner.Name,
-		wh.Repository.Name,
-		wh.Delivery,
-	)
-	v, err := json.Marshal(struct {
-		Webhook *Webhook          `json:"webhook"`
-		Headers map[string]string `json:"headers"`
-		Payload []byte            `json:"payload"`
-	}{
-		Webhook: wh,
-		Payload: b,
-		Headers: map[string]string{
-			"X-Github-Event":   r.Header.Get("X-Github-Event"),
-			"X-Github-Deliver": r.Header.Get("X-Github-Delivery"),
-		},
-	})
-	if err != nil {
-		return key, nil, err
-	}
-	val = v
-	return
-}
-
-func (s *Github) EventName(r *http.Request, b []byte, wh *Webhook) string {
-	return fmt.Sprintf("github.%v", wh.Event)
-}
-*/
-
 func (s *Github) WebhookProvider() WebhookProvider {
 	return s
 }

@@ -7,8 +7,8 @@ package repository
  * https://developer.github.com/webhooks/
  *
  * This doesn't contain all fields of GitHub webhook payload
- * because it's designed to propagate event in consul
- * which event payload size is 512 bytes.
+ * because it's designed to propagate event into other KVS, queue, pub/sub, etc.
+ * which event payload max size is not so much, for example, consul is 512 bytes.
  */
 type Webhook struct {
 	Repository struct {

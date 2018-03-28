@@ -19,10 +19,6 @@ run:
 weque: $(SRCS)
 	go build $(LDFLAGS) -o weque ./cmd/weque
 
-.PHONY: consul
-consul:
-	consul agent -config-dir ./config
-
 gh-req:
 	curl -i \
 		-H"content-type: application/json" \

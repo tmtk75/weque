@@ -36,18 +36,6 @@ type Handler interface {
 
 	/** */
 	WebhookProvider() WebhookProvider
-
-	/*
-	 * Returns key and value to be stored in a key-value store.
-	 * Designed for consul KV.
-	 */
-	//NewKeyValue(r *http.Request, body []byte, wh *Webhook) (key string, val []byte, err error)
-
-	/*
-	 * Returns a name when firing event.
-	 * Designed for consul event.
-	 */
-	//EventName(r *http.Request, body []byte, wh *Webhook) string
 }
 
 func NewHandler(h Handler, events chan<- *Context) http.HandlerFunc {
