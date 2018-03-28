@@ -11,47 +11,31 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
-func Commands(c *cli.Cmd) {
-	c.LongDesc = `To give your token,
+func List(repo string) {
+	user := strings.Split(repo, "/")[0]
+	s, err := Request(user, "GET", fmt.Sprintf("/%s/hooks", repo), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(s)
+}
 
-    export BITBUCKET_API_KEY=...`
-
-	c.Command("list", "List hooks", func(c *cli.Cmd) {
-		repo := c.String(cli.StringArg{Name: "REPO", Desc: "Repository name. ex) tmtk75/weque"})
-		c.Spec = "REPO"
-		c.Action = func() {
-			user := strings.Split(*repo, "/")[0]
-			s, err := Request(user, "GET", fmt.Sprintf("/%s/hooks", *repo), nil)
-			if err != nil {
-				log.Fatal(err)
-			}
-			fmt.Println(s)
-		}
-	})
-
-	c.Command("create", "Create hook", func(c *cli.Cmd) {
-		var (
-			repo = c.String(cli.StringArg{Name: "REPO", Desc: "Repository name. ex) tmtk75/weque"})
-			url  = c.String(cli.StringArg{Name: "URL", Desc: "Payload URL"})
-		)
-		c.Spec = "REPO URL"
-
-		c.Action = func() {
-			a := Webhook{
-				URL:    *url,
-				Active: true,
-				Events: []string{"repo:push"},
-			}
-			user := strings.Split(*repo, "/")[0]
-			s, err := Request(user, "POST", fmt.Sprintf("/%v/hooks", *repo), bytes.NewBuffer(a.Bytes()))
-			if err != nil {
-				log.Fatal(err)
-			}
-			fmt.Println(s)
-		}
-	})
+func Create(repo, url, secret string) {
+	a := Webhook{
+		URL:    url,
+		Active: true,
+		Events: []string{"repo:push"},
+	}
+	user := strings.Split(repo, "/")[0]
+	s, err := Request(user, "POST", fmt.Sprintf("/%v/hooks", repo), bytes.NewBuffer(a.Bytes()))
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(s)
 }
 
 type Webhook struct {
@@ -91,6 +75,10 @@ func Request(user, method, path string, body io.Reader) (string, error) {
 	if err != nil {
 		log.Print(err)
 		return "", err
+	}
+	if res.StatusCode/100 != 2 {
+		log.Print(res.Status)
+		return "", errors.Errorf("got %v", res.Status)
 	}
 
 	return string(b), nil
