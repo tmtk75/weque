@@ -91,7 +91,7 @@ func TestNotify(t *testing.T) {
 		expects := []incomingWebHook{
 			{
 				err:      nil,
-				username: "webhook (tmtk75)", channel: "#api-test", text: "something wrong",
+				username: "webhook (tmtk75)", channel: "#api-test", text: "ok",
 				authorIcon: icon, authorName: "github", color: "good", attachmentText: "\ndelivery:<",
 			},
 			{
@@ -109,16 +109,16 @@ func TestNotify(t *testing.T) {
 		expects := []incomingWebHook{
 			{
 				err:      nil,
-				username: "webhook (tmtk75)", channel: "#api-test", text: "something wrong",
-				authorIcon: icon, authorName: "github", color: "good", attachmentText: "\ndelivery:<",
+				username: "webhook (tmtk75)", channel: "#api-test", text: "ok",
+				authorIcon: icon, authorName: "bitbucket", color: "good", attachmentText: "\ndelivery:<",
 			},
 			{
 				err:      errors.Errorf("failed to run for bitbucket"),
 				username: "webhook (tmtk75)", channel: "#api-test", text: "failed to run for bitbucket",
-				authorIcon: icon, authorName: "github", color: "danger", attachmentText: "\ndelivery:<",
+				authorIcon: icon, authorName: "bitbucket", color: "danger", attachmentText: "\ndelivery:<",
 			},
 		}
-		run(expects, &repository.Github{})
+		run(expects, &repository.Bitbucket{})
 	})
 
 }

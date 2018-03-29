@@ -25,7 +25,7 @@ func init() {
 }
 
 func Notify(c *repository.Context, err error) error {
-	wh, err := newIncomingWebhook(c.Webhook, c.WebhookProvider)
+	wh, err := newIncomingWebhook(c.Webhook, c.WebhookProvider, err)
 	if err != nil {
 		return err
 	}

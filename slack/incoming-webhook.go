@@ -25,7 +25,7 @@ type Attachment struct {
 	Text       string `json:"text"`
 }
 
-func newIncomingWebhook(w *repository.Webhook, u repository.WebhookProvider) (*IncomingWebhook, error) {
+func newIncomingWebhook(w *repository.Webhook, u repository.WebhookProvider, exiterr error) (*IncomingWebhook, error) {
 	templ := `
 delivery:<{{ .RepositoryURL }}/settings/hooks|{{ .Delivery }}>
 head_commit:<{{ .CommitURL }}?w=1|{{ .AfterShort }}>
@@ -60,15 +60,22 @@ status:$status
 		return nil, errors.Wrapf(err, "failed templating")
 	}
 
+	titletext := "ok"
+	color := "good"
+	if exiterr != nil {
+		titletext = exiterr.Error()
+		color = "danger"
+	}
+
 	wh := &IncomingWebhook{
 		Channel:  viper.GetString(KEY_CHANNEL_NAME),
 		Username: fmt.Sprintf("webhook (%s)", w.Pusher.Name),
-		Text:     "something wrong",
+		Text:     titletext,
 		Attachments: []Attachment{
 			Attachment{
 				AuthorName: u.Name(),
 				AuthorIcon: u.IconURL(),
-				Color:      "warning",
+				Color:      color,
 				Text:       text.String(),
 			},
 		},
