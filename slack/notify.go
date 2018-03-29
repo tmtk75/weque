@@ -24,7 +24,7 @@ func init() {
 	viper.BindEnv(KEY_CHANNEL_NAME, "SLACK_CHANNEL_NAME")
 }
 
-func Notify(c *repository.Context) error {
+func Notify(c *repository.Context, err error) error {
 	wh, err := newIncomingWebhook(c.Webhook, c.WebhookProvider)
 	if err != nil {
 		return err

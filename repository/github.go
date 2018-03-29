@@ -88,6 +88,7 @@ func (s *Github) Name() string {
 }
 
 func (s *Github) IconURL() string {
+	// FIXME
 	return "http://cdn.flaticon.com/png/256/25231.png"
 }
 

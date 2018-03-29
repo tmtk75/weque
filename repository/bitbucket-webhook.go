@@ -43,9 +43,9 @@ func (body *BitbucketWebhook) Webhook() (*Webhook, error) {
 	ch := body.Push["changes"][0]
 	switch ch.New.Type {
 	case "branch":
-		wb.Ref = "refs/heads/" + ch.New.Name
+		wb.Ref = "refs/heads/" + ch.New.Name // Normalize
 	case "tag":
-		wb.Ref = "refs/tags/" + ch.New.Name
+		wb.Ref = "refs/tags/" + ch.New.Name // Normalize
 	default:
 		return nil, fmt.Errorf("unknown type: %v", ch.New.Type)
 	}

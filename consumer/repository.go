@@ -16,8 +16,8 @@ const (
 func StartRepositoryConsumer(events <-chan *repository.Context) {
 	log.Printf("repository consumer started")
 	for {
-		c := <-events
-		wb := c.Webhook
+		ctx := <-events
+		wb := ctx.Webhook
 		log.Printf("started. delivery: %v", wb.Delivery)
 
 		rh := viper.GetString(KeyHandlerScriptRepository)
@@ -28,7 +28,7 @@ func StartRepositoryConsumer(events <-chan *repository.Context) {
 		}
 		log.Printf("finished. delivery: %v", wb.Delivery)
 
-		if err := slack.Notify(c); err != nil {
+		if err := slack.Notify(ctx, err); err != nil {
 			log.Printf("[error] %v", err)
 		}
 	}
