@@ -22,10 +22,19 @@ func New() *Server {
 }
 
 func (s *Server) Start() error {
+	var (
+		gh        = &repository.Github{}
+		bb        = &repository.Bitbucket{}
+		github    = repository.NewHandler(gh, s.events)
+		bitbucket = repository.NewHandler(bb, s.events)
+		regh      = NewDispatcher(github, bitbucket)
+	)
 	r := chi.NewRouter()
 	r.Post("/registry", registry.RegistryHandler)
-	r.Post("/repository/github", repository.NewHandler(&repository.Github{}, s.events))
-	r.Post("/repository/bitbucket", repository.NewHandler(&repository.Bitbucket{}, s.events))
+	r.Post("/", regh)
+	r.Post("/repository", regh)
+	r.Post("/repository/github", github)
+	r.Post("/repository/bitbucket", bitbucket)
 
 	go consumer.StartRepositoryConsumer(s.events)
 

@@ -20,6 +20,11 @@ func init() {
 
 type Handler interface {
 	/*
+	 * Return the requiest ID string
+	 */
+	RequestID(r *http.Request) string
+
+	/*
 	 * Return nil if the request is acceptable.
 	 */
 	Verify(r *http.Request, body []byte) error
@@ -38,21 +43,35 @@ type Handler interface {
 	WebhookProvider() WebhookProvider
 }
 
+const ShortenMax = 32 // max length to shorten
+
+func Shorten(s string, n int) string {
+	if len(s) > n {
+		return s[0:n] + "..."
+	}
+	return s
+}
+
 func NewHandler(h Handler, events chan<- *Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		rid := h.RequestID(r)
+
 		b, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			weque.SendError(w, 500, fmt.Sprintf("%v", err))
+			weque.SendError(w, 500, fmt.Sprintf("failed to read: %v", err))
 			return
 		}
+		log.Printf("[debug] read %vbytes for %v", len(b), rid)
 
 		if err := h.Verify(r, b); err != nil {
-			log.Printf("%v", string(b))
-			weque.SendError(w, 400, fmt.Sprintf("Failed to verify: %v", err))
+			log.Printf("failed to verify for %v: %v", rid, Shorten(string(b), ShortenMax))
+			weque.SendError(w, 400, fmt.Sprintf("failed to verify: %v", err))
 			return
 		}
+		log.Printf("[debug] verified %v", rid)
 
 		if h.IsPing(r, b) {
+			log.Printf("request is ping: %v", rid)
 			msg := fmt.Sprintf("Received pings: %v", r.RequestURI)
 			log.Print(msg)
 			w.WriteHeader(200)
@@ -62,7 +81,8 @@ func NewHandler(h Handler, events chan<- *Context) http.HandlerFunc {
 
 		body, err := h.Unmarshal(r, b)
 		if err != nil {
-			weque.SendError(w, 400, fmt.Sprintf("%v", err))
+			log.Printf("failed to unmarshal: %v", rid)
+			weque.SendError(w, 400, fmt.Sprintf("failed to unmarshal: %v", err))
 			return
 		}
 

@@ -25,7 +25,7 @@ gh-req:
 		-H"X-Hub-Signature: sha1=c699905923f6a533824e8fb13a0b344d52146e20" \
 		-H"X-Github-Event: push" \
 		-H"X-Github-Delivery: local-test" \
-		localhost:9981/repository/github \
+		localhost:9981/ \
 		-d @github/payload.json
 
 gh-req2:
@@ -33,15 +33,15 @@ gh-req2:
 		-H"content-type: application/x-www-form-urlencoded" \
 		-H"X-Hub-Signature: sha1=af9c4634ebadf38f19f14c713f2ab9c0328934ad" \
 		-H"X-Github-Event: push" \
-		-H"X-Github-Delivery: local-test" \
-		localhost:9981/repository/github \
+		-H"X-Github-Delivery: local-test2" \
+		localhost:9981/ \
 		-d @github/payload.txt
 
 bb-req:
 	curl -i \
 		-H "X-Request-UUID: aabbcc" \
 		-H "X-Hook-UUID: xxyyzz" \
-		localhost:9981/repository/bitbucket?secret=abc123 \
+		localhost:9981/secret=abc123 \
 		-d @bitbucket/payload.json
 
 .PHONY: install

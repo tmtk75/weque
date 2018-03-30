@@ -12,6 +12,10 @@ import (
 type Bitbucket struct {
 }
 
+func (bb *Bitbucket) RequestID(r *http.Request) string {
+	return r.Header.Get("X-Request-UUID")
+}
+
 func (bb *Bitbucket) Verify(r *http.Request, body []byte) error {
 	token := viper.GetString(KeySecretToken)
 	secret := r.URL.Query().Get("secret")

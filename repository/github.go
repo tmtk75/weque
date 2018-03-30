@@ -19,12 +19,17 @@ import (
 type Github struct {
 }
 
+func (s *Github) RequestID(r *http.Request) string {
+	return r.Header.Get("X-Github-Delivery")
+}
+
 func (s *Github) Verify(r *http.Request, body []byte) error {
 	sign := r.Header.Get("X-Hub-Signature")
 	return Verify(sign, body)
 }
 
 func Verify(sign string, b []byte) error {
+	log.Printf("sign: %v, len: %v", sign, len(b))
 	if !strings.HasPrefix(sign, "sha1=") {
 		s := fmt.Sprintf("unknown hash algorithm: %v", sign)
 		log.Println(s)
@@ -61,8 +66,9 @@ func (s *Github) Unmarshal(r *http.Request, b []byte) (*Webhook, error) {
 		}
 		p := r.Form["payload"]
 		if len(p) != 1 {
-			return nil, fmt.Errorf("unexpected payload: %v", p)
+			return nil, fmt.Errorf("unexpected payload for %v: %v", ctype, p)
 		}
+		log.Printf("[debug] payload: %v", Shorten(p[0], ShortenMax))
 		b = []byte(r.Form["payload"][0])
 	case "application/json":
 		// NOP
