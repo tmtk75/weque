@@ -45,3 +45,16 @@ func TestRun(t *testing.T) {
 		assert.Equal(t, expected[i], v)
 	}
 }
+
+func TestRunFailed(t *testing.T) {
+	t.Run("missing-script", func(t *testing.T) {
+		err := Run([]string{}, ".", "missing-script")
+		assert.Error(t, err)
+	})
+
+	t.Run("failed-to-run", func(t *testing.T) {
+		err := Run([]string{}, ".", "./fail.sh")
+		assert.Error(t, err)
+		assert.Regexp(t, "^failed to run.*exit status 127", err.Error())
+	})
+}

@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -e
+
 echo $$
 sleep ${1-3}
 

@@ -6,6 +6,8 @@ import (
 	"log"
 	"os/exec"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 var stdout io.Writer = nil // for test
@@ -33,9 +35,9 @@ func Run(env []string, wd, s string, args ...string) error {
 
 	if err != nil {
 		log.Printf("[error] %v %v %v", time.Since(now), err, args)
-		return err
+		return errors.Wrapf(err, "failed to run")
 	}
 
 	log.Printf("%v %v %v in %v", time.Since(now), s, args, wd)
-	return err
+	return nil
 }
