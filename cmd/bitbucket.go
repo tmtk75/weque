@@ -36,7 +36,7 @@ func init() {
 }
 
 var bitbucketListCmd = &cobra.Command{
-	Use:  "list",
+	Use:  "list [flags] <owner/repo>",
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		bitbucket.List(args[0])

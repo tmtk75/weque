@@ -57,7 +57,7 @@ func init() {
 }
 
 var listCmd = &cobra.Command{
-	Use: "list",
+	Use: "list <onwer/repo>",
 	Long: `To give your token,
 
     export GITHUB_TOKEN=...`,
@@ -68,7 +68,7 @@ var listCmd = &cobra.Command{
 }
 
 var createCmd = &cobra.Command{
-	Use:  "create",
+	Use:  "create <repo> <url> <secret>",
 	Long: `Create a new webhook in the github repository.`,
 	Args: cobra.RangeArgs(3, 4), // REPO URL SECRET
 	Run: func(cmd *cobra.Command, args []string) {
