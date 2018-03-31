@@ -14,29 +14,33 @@ import (
 )
 
 type Server struct {
-	events chan *repository.Context
+	repositoryEvents chan *repository.Context
+	registryEvents   chan *registry.Webhook
 }
 
 func New() *Server {
-	return &Server{events: make(chan *repository.Context)}
+	return &Server{
+		repositoryEvents: make(chan *repository.Context),
+		registryEvents:   make(chan *registry.Webhook),
+	}
 }
 
 func (s *Server) Start() error {
 	var (
 		gh        = &repository.Github{}
 		bb        = &repository.Bitbucket{}
-		github    = repository.NewHandler(gh, s.events)
-		bitbucket = repository.NewHandler(bb, s.events)
+		github    = repository.NewHandler(gh, s.repositoryEvents)
+		bitbucket = repository.NewHandler(bb, s.repositoryEvents)
 		regh      = NewDispatcher(github, bitbucket)
 	)
 	e := echo.New()
-	e.POST("/registry", Wrap(e, registry.RegistryHandler))
+	e.POST("/registry", Wrap(e, registry.NewHandler(s.registryEvents)))
 	e.POST("/", Wrap(e, regh))
 	e.POST("/repository", Wrap(e, regh))
 	e.POST("/repository/github", Wrap(e, github))
 	e.POST("/repository/bitbucket", Wrap(e, bitbucket))
 
-	go consumer.StartRepositoryConsumer(s.events)
+	go consumer.StartRepositoryConsumer(s.repositoryEvents)
 
 	port := viper.GetInt("port")
 	log.Printf("start listening at %d", port)

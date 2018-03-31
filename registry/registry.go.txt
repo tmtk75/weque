@@ -1,6 +1,0 @@
-package registry
-
-import cli "github.com/jawher/mow.cli"
-
-func Commands(c *cli.Cmd) {
-}

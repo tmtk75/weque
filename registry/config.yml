@@ -19,11 +19,13 @@ http:
 
 notifications:
   endpoints:
-      - name: test
-        disabled: false
-        url: https://3def21d4.ngrok.io/registry
-        headers:
-          x-test: [abc123]
-        timeout: 30s
-        threshold: 5
-        backoff: 3s
+    - name: test
+      disabled: false
+      url: https://a935e068.ngrok.io/registry
+      headers:
+        x-test: [abc123]
+      timeout: 30s
+      threshold: 5
+      backoff: 3s
+      ignoredmediatypes:
+        - application/octet-stream

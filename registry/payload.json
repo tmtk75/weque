@@ -1,0 +1,30 @@
+{
+   "events": [
+      {
+         "id": "115d94fb-7318-497c-aa74-4061d4e52548",
+         "timestamp": "2018-04-01T00:20:31.648394159Z",
+         "action": "push",
+         "target": {
+            "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "size": 528,
+            "digest": "sha256:d6eda1410b93902ac84bdd775167c84ab59e5abadad88791d742fea93b161e93",
+            "length": 528,
+            "repository": "alpine",
+            "url": "http://localhost:5000/v2/alpine/manifests/sha256:d6eda1410b93902ac84bdd775167c84ab59e5abadad88791d742fea93b161e93",
+            "tag": "3.6"
+         },
+         "request": {
+            "id": "329f13c1-1b15-467d-b917-7a79f2113ce3",
+            "addr": "172.17.0.1:54070",
+            "host": "localhost:5000",
+            "method": "PUT",
+            "useragent": "docker/17.12.0-ce go/go1.9.2 git-commit/c97c6d6 kernel/4.9.60-linuxkit-aufs os/linux arch/amd64 UpstreamClient(Docker-Client/17.12.0-ce \\(darwin\\))"
+         },
+         "actor": {},
+         "source": {
+            "addr": "58b4cce27c60:5000",
+            "instanceID": "d556e8a6-56e1-4621-8763-e457b945d2c4"
+         }
+      }
+   ]
+}

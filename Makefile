@@ -41,8 +41,13 @@ bb-req:
 	curl -i \
 		-H "X-Request-UUID: aabbcc" \
 		-H "X-Hook-UUID: xxyyzz" \
-		localhost:9981/secret=abc123 \
+		localhost:9981/?secret=abc123 \
 		-d @bitbucket/payload.json
+
+dr-req:
+	curl -i \
+		localhost:9981/registry \
+		-d @registry/payload.json
 
 .PHONY: install
 install:  ## Install in GOPATH
@@ -52,7 +57,7 @@ install:  ## Install in GOPATH
 .PHONY: registry
 registry:
 	docker run -p 5000:5000 --rm --name registry \
-		-v `pwd`/config.yml:/etc/docker/registry/config.yml \
+		-v `pwd`/registry/config.yml:/etc/docker/registry/config.yml \
 		registry:2
 
 .PHONY: tcpflow
