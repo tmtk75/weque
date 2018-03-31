@@ -22,7 +22,7 @@ func RegistryHandler(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(b, &body)
 	if err != nil {
 		log.Printf("failed to unmarshal: %v", err)
-		return
+		return // err
 	}
 
 	log.Printf("%v", r)
