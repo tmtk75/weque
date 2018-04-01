@@ -41,6 +41,7 @@ func (s *Server) Start() error {
 	e.POST("/repository/bitbucket", Wrap(e, bitbucket))
 
 	go consumer.StartRepositoryConsumer(s.repositoryEvents)
+	go consumer.StartRegistryConsumer(s.registryEvents)
 
 	port := viper.GetInt("port")
 	log.Printf("start listening at %d", port)
