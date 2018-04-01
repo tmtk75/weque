@@ -35,5 +35,15 @@ func StartRegistryConsumer(events <-chan *registry.Webhook) {
 }
 
 func RegistryEnv(e *registry.Event) []string {
-	return make([]string, 9)
+	return []string{
+		"EVENT_ID=" + e.ID,
+		"REPOSITORY=" + e.Target.Repository,
+		"DIGEST=" + e.Target.Digest,
+		"URL=" + e.Target.URL,
+		"TAG=" + e.Target.Tag,
+		"REQUEST_ID=" + e.Request.ID,
+		"ADDR=" + e.Request.Addr,
+		"HOST=" + e.Request.Host,
+		"USER_AGENT=" + e.Request.UserAgent,
+	}
 }
