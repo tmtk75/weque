@@ -29,8 +29,11 @@ func Notify(c *repository.Context, err error) error {
 	if err != nil {
 		return err
 	}
+	if err := request(wh); err != nil {
+		return err
+	}
 	log.Printf("notified to slack channel, %v", wh.Channel)
-	return request(wh)
+	return nil
 }
 
 var newClient = func(c *http.Client) *http.Client {

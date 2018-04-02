@@ -5,8 +5,8 @@ prefix: ""
 secret_token: abc123
 
 handlers:
-  repository: ./repository/sleep.sh
-  registry: /dev/null
+  repository: ./repository/test-handler.sh
+  registry: ./registry/test-handler.sh
 
 notification:
   slack:

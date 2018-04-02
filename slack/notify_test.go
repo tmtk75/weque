@@ -17,6 +17,12 @@ type capture struct {
 	request *http.Request
 }
 
+type incomingWebHook struct {
+	err                                           error
+	username, channel, text                       string
+	authorIcon, authorName, color, attachmentText string
+}
+
 func (c *capture) RoundTrip(r *http.Request) (*http.Response, error) {
 	c.request = r
 	return &http.Response{
@@ -53,12 +59,6 @@ func TestNotify(t *testing.T) {
 	newClient = func(c *http.Client) *http.Client {
 		c.Transport = cap
 		return c
-	}
-
-	type incomingWebHook struct {
-		err                                           error
-		username, channel, text                       string
-		authorIcon, authorName, color, attachmentText string
 	}
 
 	run := func(expects []incomingWebHook, provider repository.WebhookProvider) {
