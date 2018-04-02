@@ -46,6 +46,7 @@ bb-req:
 
 dr-req:
 	curl -i \
+		-H "X-weque-secret: abc123" \
 		localhost:9981/registry \
 		-d @registry/payload.json
 

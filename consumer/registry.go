@@ -1,7 +1,9 @@
 package consumer
 
 import (
+	"fmt"
 	"log"
+	"strings"
 
 	"github.com/spf13/viper"
 	"github.com/tmtk75/weque"
@@ -35,15 +37,17 @@ func StartRegistryConsumer(events <-chan *registry.Webhook) {
 }
 
 func RegistryEnv(e *registry.Event) []string {
+	prefix := strings.ToUpper(viper.GetString("prefix"))
+	f := func(a string, b interface{}) string { return fmt.Sprintf("%s%s=%v", prefix, a, b) }
 	return []string{
-		"EVENT_ID=" + e.ID,
-		"REPOSITORY=" + e.Target.Repository,
-		"DIGEST=" + e.Target.Digest,
-		"URL=" + e.Target.URL,
-		"TAG=" + e.Target.Tag,
-		"REQUEST_ID=" + e.Request.ID,
-		"ADDR=" + e.Request.Addr,
-		"HOST=" + e.Request.Host,
-		"USER_AGENT=" + e.Request.UserAgent,
+		f("EVENT_ID", e.ID),
+		f("REPOSITORY", e.Target.Repository),
+		f("DIGEST", e.Target.Digest),
+		f("URL", e.Target.URL),
+		f("TAG", e.Target.Tag),
+		f("REQUEST_ID", e.Request.ID),
+		f("ADDR", e.Request.Addr),
+		f("HOST", e.Request.Host),
+		f("USER_AGENT", e.Request.UserAgent),
 	}
 }
