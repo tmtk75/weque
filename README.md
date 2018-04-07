@@ -1,4 +1,5 @@
 # README
+Weque is a server to receive webhooks written with modern libraries.
 
 ## Getting Started
 * ngrok
@@ -32,3 +33,11 @@ TBD
 ```
 $ tcpflow -i lo0 -c 'port 3000'
 ```
+
+
+## Development
+```
+[0]$ go run ./cmd/weque/main.go serve
+...
+
+[1]$ ngrok http 9981
