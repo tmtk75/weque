@@ -32,6 +32,8 @@ func NewDispatcher(github, bitbucket http.HandlerFunc) http.HandlerFunc {
 			r.Body = ioutil.NopCloser(bytes.NewBuffer(b))
 			github(w, r)
 			return
+		} else {
+			log.Printf("missing After. It seems not valid body thought parsed. %v", wh)
 		}
 		//log.Printf("after: %v", wh.After)
 
@@ -45,6 +47,8 @@ func NewDispatcher(github, bitbucket http.HandlerFunc) http.HandlerFunc {
 			r.Body = ioutil.NopCloser(bytes.NewBuffer(b))
 			bitbucket(w, r)
 			return
+		} else {
+			log.Printf("missing After. It seems not valid body thought parsed. %v", wh)
 		}
 
 		// Unknown

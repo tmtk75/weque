@@ -76,7 +76,7 @@ func NewHandler(h Handler, events chan<- *Context) http.HandlerFunc {
 
 		if h.IsPing(r, b) {
 			log.Printf("request is ping: %v", rid)
-			msg := fmt.Sprintf("Received pings: %v", r.RequestURI)
+			msg := fmt.Sprintf("Received ping: %v", r.RequestURI)
 			log.Print(msg)
 			w.WriteHeader(200)
 			w.Write([]byte(msg))

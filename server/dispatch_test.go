@@ -78,7 +78,7 @@ func TestNewDispatcher(t *testing.T) {
 	}
 }
 
-func TestNewDispatcherUnknown(t *testing.T) {
+func TestDispatcherUnknown(t *testing.T) {
 	req := httptest.NewRequest("POST", "https://example.com", nil)
 	w := httptest.NewRecorder()
 	dispatcher(w, req)
@@ -90,8 +90,12 @@ func TestNewDispatcherUnknown(t *testing.T) {
 	assert.Equal(t, "unknown webhook: failed to unmarshal as github and bitbucket.", string(body))
 }
 
-func TestNewDispatcherPing(t *testing.T) {
-	req := httptest.NewRequest("POST", "https://example.com", nil)
+func TestDispatcherPing(t *testing.T) {
+	viper.Set(repository.KeyInsecureMode, true)
+
+	rb := bytes.NewBufferString(`{"After": "a"}`)
+	req := httptest.NewRequest("POST", "https://example.com", rb)
+	req.Header.Add("content-type", "application/json")
 	req.Header.Add("x-github-event", "ping")
 	w := httptest.NewRecorder()
 	dispatcher(w, req)
@@ -100,5 +104,7 @@ func TestNewDispatcherPing(t *testing.T) {
 	body, _ := ioutil.ReadAll(res.Body)
 
 	assert.Equal(t, 200, res.StatusCode)
-	assert.Equal(t, "", string(body))
+	assert.Equal(t, "Received ping: https://example.com", string(body))
+
+	viper.Set(repository.KeyInsecureMode, false)
 }
