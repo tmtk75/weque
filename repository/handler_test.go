@@ -57,7 +57,7 @@ func TestHandlerInsecure(t *testing.T) {
 		h(r, req)
 		res := r.Result()
 		body, _ := ioutil.ReadAll(res.Body)
-		assert.Equal(t, 400, res.StatusCode)
+		assert.Equal(t, 401, res.StatusCode)
 		assert.Regexp(t, "failed to verify", string(body))
 	})
 

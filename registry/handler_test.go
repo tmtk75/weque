@@ -62,7 +62,7 @@ func TestHandlerVeirfy(t *testing.T) {
 		{
 			reqbody: "{}",
 			headers: map[string]string{},
-			code:    400,
+			code:    401,
 			body:    "failed to verify: the given secret token didn't match",
 		},
 		{
@@ -108,7 +108,7 @@ func TestHandlerInsecure(t *testing.T) {
 		r := httptest.NewRecorder()
 		h(r, req)
 		res := r.Result()
-		assert.Equal(t, 400, res.StatusCode)
+		assert.Equal(t, 401, res.StatusCode)
 	})
 
 	// insecure

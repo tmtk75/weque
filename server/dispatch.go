@@ -48,6 +48,6 @@ func NewDispatcher(github, bitbucket http.HandlerFunc) http.HandlerFunc {
 		}
 
 		// Unknown
-		weque.SendError(w, 500, fmt.Sprintf("%v", err))
+		weque.SendError(w, 400, "unknown webhook: failed to unmarshal as github and bitbucket.")
 	}
 }

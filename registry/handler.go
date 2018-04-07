@@ -21,7 +21,7 @@ func NewHandler(events chan<- *Webhook) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !viper.GetBool(KeyInsecureMode) {
 			if err := Verify(r); err != nil {
-				weque.SendError(w, 400, fmt.Sprintf("failed to verify: %v", err))
+				weque.SendError(w, 401, fmt.Sprintf("failed to verify: %v", err))
 				return
 			}
 		}
