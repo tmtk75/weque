@@ -16,15 +16,15 @@ func init() {
 	viper.Set(repository.KeySecretToken, "abc123")
 }
 
-func TestNewDispatcher(t *testing.T) {
-	var (
-		ch        = make(chan<- *repository.Context)
-		github    = repository.NewHandler(&repository.Github{}, ch)
-		bitbucket = repository.NewHandler(&repository.Bitbucket{}, ch)
-	)
-	h := NewDispatcher(github, bitbucket)
+var (
+	ch         = make(chan<- *repository.Context)
+	github     = repository.NewHandler(&repository.Github{}, ch)
+	bitbucket  = repository.NewHandler(&repository.Bitbucket{}, ch)
+	dispatcher = NewDispatcher(github, bitbucket)
+)
 
-	s := httptest.NewServer(h)
+func TestNewDispatcher(t *testing.T) {
+	s := httptest.NewServer(dispatcher)
 	defer s.Close()
 
 	data := []struct {
@@ -76,4 +76,29 @@ func TestNewDispatcher(t *testing.T) {
 		body, err := ioutil.ReadAll(res.Body)
 		assert.Equal(t, e.expected, string(body))
 	}
+}
+
+func TestNewDispatcherUnknown(t *testing.T) {
+	req := httptest.NewRequest("POST", "https://example.com", nil)
+	w := httptest.NewRecorder()
+	dispatcher(w, req)
+
+	res := w.Result()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	assert.Equal(t, 400, res.StatusCode)
+	assert.Equal(t, "unknown webhook: failed to unmarshal as github and bitbucket.", string(body))
+}
+
+func TestNewDispatcherPing(t *testing.T) {
+	req := httptest.NewRequest("POST", "https://example.com", nil)
+	req.Header.Add("x-github-event", "ping")
+	w := httptest.NewRecorder()
+	dispatcher(w, req)
+
+	res := w.Result()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	assert.Equal(t, 200, res.StatusCode)
+	assert.Equal(t, "", string(body))
 }
