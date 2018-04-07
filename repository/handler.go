@@ -10,10 +10,6 @@ import (
 	"github.com/tmtk75/weque"
 )
 
-const (
-	KeySecretToken = "secret_token"
-)
-
 func init() {
 	viper.BindEnv(KeySecretToken, "SECRET_TOKEN")
 }
@@ -43,7 +39,11 @@ type Handler interface {
 	WebhookProvider() WebhookProvider
 }
 
-const ShortenMax = 32 // max length to shorten
+const (
+	ShortenMax      = 32 // max length to shorten
+	KeyInsecureMode = weque.KeyInsecureMode
+	KeySecretToken  = weque.KeySecretToken
+)
 
 func Shorten(s string, n int) string {
 	if len(s) > n {
@@ -63,10 +63,14 @@ func NewHandler(h Handler, events chan<- *Context) http.HandlerFunc {
 		}
 		log.Printf("[debug] read %vbytes for %v", len(b), rid)
 
-		if err := h.Verify(r, b); err != nil {
-			log.Printf("failed to verify for %v: %v", rid, Shorten(string(b), ShortenMax))
-			weque.SendError(w, 400, fmt.Sprintf("failed to verify: %v", err))
-			return
+		if !viper.GetBool(KeyInsecureMode) {
+			if err := h.Verify(r, b); err != nil {
+				log.Printf("failed to verify for %v: %v", rid, Shorten(string(b), ShortenMax))
+				weque.SendError(w, 400, fmt.Sprintf("failed to verify: %v", err))
+				return
+			}
+		} else {
+			log.Printf("skip to verify because of insecure mode")
 		}
 		log.Printf("[debug] verified %v", rid)
 

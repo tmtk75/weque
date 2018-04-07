@@ -22,6 +22,7 @@ import (
 
 	"github.com/tmtk75/weque/consumer"
 	"github.com/tmtk75/weque/registry"
+	"github.com/tmtk75/weque/repository"
 	"github.com/tmtk75/weque/server"
 )
 
@@ -56,4 +57,7 @@ func init() {
 
 	pflags.String("registry-handler", "./handlers/registry", "handler script for registry")
 	viper.BindPFlag(registry.KeyHandlerScript, pflags.Lookup("registry-handler"))
+
+	pflags.Bool("insecure", false, "handler script for registry")
+	viper.BindPFlag(repository.KeyInsecureMode, pflags.Lookup("insecure"))
 }

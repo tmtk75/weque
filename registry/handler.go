@@ -13,14 +13,17 @@ import (
 
 const (
 	KeyHandlerScript = "handlers.registry"
-	KeySecretToken   = "secret_token"
+	KeySecretToken   = weque.KeySecretToken
+	KeyInsecureMode  = weque.KeyInsecureMode
 )
 
 func NewHandler(events chan<- *Webhook) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := Verify(r); err != nil {
-			weque.SendError(w, 400, fmt.Sprintf("failed to verify: %v", err))
-			return
+		if !viper.GetBool(KeyInsecureMode) {
+			if err := Verify(r); err != nil {
+				weque.SendError(w, 400, fmt.Sprintf("failed to verify: %v", err))
+				return
+			}
 		}
 
 		b, err := ioutil.ReadAll(r.Body)

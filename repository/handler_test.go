@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -42,4 +43,34 @@ func TestNewHandler(t *testing.T) {
 
 	expected := []uint8([]byte{0xa})
 	assert.Equal(t, expected, body)
+}
+
+func TestHandlerInsecure(t *testing.T) {
+	req := httptest.NewRequest("POST", "http://example.com", bytes.NewBufferString("{}"))
+	h := NewHandler(&Github{}, make(chan<- *Context))
+	viper.Set(KeySecretToken, "abc123")
+
+	// secure
+	viper.Set(KeyInsecureMode, false)
+	t.Run("secure", func(t *testing.T) {
+		r := httptest.NewRecorder()
+		h(r, req)
+		res := r.Result()
+		body, _ := ioutil.ReadAll(res.Body)
+		assert.Equal(t, 400, res.StatusCode)
+		assert.Regexp(t, "failed to verify", string(body))
+	})
+
+	// insecure
+	viper.Set(KeyInsecureMode, true)
+	t.Run("insecure", func(t *testing.T) {
+		r := httptest.NewRecorder()
+		h(r, req)
+		res := r.Result()
+		body, _ := ioutil.ReadAll(res.Body)
+		assert.Equal(t, 400, res.StatusCode)
+		assert.Regexp(t, "failed to unmarshal", string(body))
+	})
+
+	viper.Set(KeyInsecureMode, false)
 }

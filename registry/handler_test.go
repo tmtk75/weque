@@ -96,3 +96,29 @@ func TestHandlerVeirfy(t *testing.T) {
 
 	viper.Set(KeySecretToken, "")
 }
+
+func TestHandlerInsecure(t *testing.T) {
+	req := httptest.NewRequest("POST", "http://example.com", nil)
+	h := NewHandler(make(chan<- *Webhook))
+	viper.Set(KeySecretToken, "abc123")
+
+	// secure
+	viper.Set(KeyInsecureMode, false)
+	t.Run("secure", func(t *testing.T) {
+		r := httptest.NewRecorder()
+		h(r, req)
+		res := r.Result()
+		assert.Equal(t, 400, res.StatusCode)
+	})
+
+	// insecure
+	viper.Set(KeyInsecureMode, true)
+	t.Run("insecure", func(t *testing.T) {
+		r := httptest.NewRecorder()
+		h(r, req)
+		res := r.Result()
+		assert.Equal(t, 200, res.StatusCode)
+	})
+
+	viper.Set(KeyInsecureMode, false)
+}
