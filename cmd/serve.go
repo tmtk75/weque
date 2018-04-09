@@ -46,8 +46,14 @@ func init() {
 
 	pflags := serverCmd.PersistentFlags()
 
-	pflags.IntP("port", "p", 9981, "port to listen")
-	viper.BindPFlag("port", pflags.Lookup("port"))
+	pflags.StringP("port", "p", ":9981", "port to listen")
+	viper.BindPFlag(server.KeyPort, pflags.Lookup("port"))
+
+	pflags.String("tls.port", ":https", "port in TLS to listen")
+	viper.BindPFlag(server.KeyTLSPort, pflags.Lookup("tls.port"))
+
+	pflags.String("acme.challenge-port", ":http", "port to listen for ACME challenge")
+	viper.BindPFlag(server.KeyACMEChallengePort, pflags.Lookup("acme.challenge-port"))
 
 	pflags.String("prefix", "", "prefix for environment variable")
 	viper.BindPFlag("prefix", pflags.Lookup("prefix"))

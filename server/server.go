@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -11,6 +10,11 @@ import (
 	"github.com/tmtk75/weque/consumer"
 	"github.com/tmtk75/weque/registry"
 	"github.com/tmtk75/weque/repository"
+)
+
+const (
+	KeyPort    = "port"
+	KeyTLSPort = "tls.port"
 )
 
 type Server struct {
@@ -43,9 +47,12 @@ func (s *Server) Start() error {
 	go consumer.StartRepositoryConsumer(s.repositoryEvents)
 	go consumer.StartRegistryConsumer(s.registryEvents)
 
-	port := viper.GetInt("port")
-	log.Printf("start listening at %d", port)
-	err := http.ListenAndServe(fmt.Sprintf(":%d", port), e)
+	var err error
+	if !viper.GetBool(KeyACMEEnabled) {
+		err = ListenAndServe(e)
+	} else {
+		err = ListenAndServeTLS(e)
+	}
 	if err != nil {
 		log.Println(err)
 		return err
@@ -70,4 +77,11 @@ func Validate() error {
 		log.Printf("%v: %v", key, path)
 	}
 	return nil
+}
+
+func ListenAndServe(e http.Handler) error {
+	port := viper.GetString(KeyPort)
+	log.Printf("start listening at %s", port)
+	err := http.ListenAndServe(port, e)
+	return err
 }

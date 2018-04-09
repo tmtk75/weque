@@ -1,4 +1,10 @@
-port: 9981
+port: :9981
+
+tls:
+  # port: :1443
+  acme:
+    # enabled: true
+    # challenge-port: :80
 
 prefix: ""
 
