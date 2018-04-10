@@ -9,6 +9,8 @@ import (
 
 	"github.com/tmtk75/weque"
 	"github.com/tmtk75/weque/repository"
+	bb "github.com/tmtk75/weque/repository/bitbucket"
+	gh "github.com/tmtk75/weque/repository/github"
 )
 
 func NewDispatcher(github, bitbucket http.HandlerFunc) http.HandlerFunc {
@@ -23,7 +25,7 @@ func NewDispatcher(github, bitbucket http.HandlerFunc) http.HandlerFunc {
 
 		var wh *repository.Webhook
 		// GitHub
-		wh, err = (&repository.Github{}).Unmarshal(r, b)
+		wh, err = (&gh.Github{}).Unmarshal(r, b)
 		if err != nil {
 			// Not github
 			log.Printf("[info] failed to parse request body as github: %v", err)
@@ -38,7 +40,7 @@ func NewDispatcher(github, bitbucket http.HandlerFunc) http.HandlerFunc {
 		//log.Printf("after: %v", wh.After)
 
 		// Bitbucket
-		wh, err = (&repository.Bitbucket{}).Unmarshal(r, b)
+		wh, err = (&bb.Bitbucket{}).Unmarshal(r, b)
 		if err != nil {
 			// Not bitbucket
 			log.Printf("[info] failed to parse request body as bitbucket: %v", err)

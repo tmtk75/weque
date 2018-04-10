@@ -5,11 +5,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tmtk75/weque/repository"
+	gh "github.com/tmtk75/weque/repository/github"
 )
 
 func TestNewIncomingWebhook(t *testing.T) {
 	w := &repository.Webhook{Before: "0123456", After: "0123456"}
-	g := &repository.Github{}
+	g := &gh.Github{}
 	iw, err := newIncomingWebhook(w, g, nil)
 
 	assert.NoError(t, err)

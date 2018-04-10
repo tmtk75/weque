@@ -10,6 +10,8 @@ import (
 	"github.com/tmtk75/weque/consumer"
 	"github.com/tmtk75/weque/registry"
 	"github.com/tmtk75/weque/repository"
+	bb "github.com/tmtk75/weque/repository/bitbucket"
+	gh "github.com/tmtk75/weque/repository/github"
 )
 
 const (
@@ -31,10 +33,8 @@ func New() *Server {
 
 func (s *Server) Start() error {
 	var (
-		gh        = &repository.Github{}
-		bb        = &repository.Bitbucket{}
-		github    = repository.NewHandler(gh, s.repositoryEvents)
-		bitbucket = repository.NewHandler(bb, s.repositoryEvents)
+		github    = repository.NewHandler(&gh.Github{}, s.repositoryEvents)
+		bitbucket = repository.NewHandler(&bb.Bitbucket{}, s.repositoryEvents)
 		regh      = NewDispatcher(github, bitbucket)
 	)
 	e := echo.New()
@@ -44,8 +44,7 @@ func (s *Server) Start() error {
 	e.POST("/repository/github", Wrap(e, github))
 	e.POST("/repository/bitbucket", Wrap(e, bitbucket))
 
-	go consumer.StartRepositoryConsumer(s.repositoryEvents)
-	go consumer.StartRegistryConsumer(s.registryEvents)
+	consumer.Start(s.repositoryEvents, s.registryEvents)
 
 	var err error
 	if !viper.GetBool(KeyACMEEnabled) {
@@ -69,7 +68,7 @@ func Wrap(e *echo.Echo, h http.HandlerFunc) func(echo.Context) error {
 }
 
 func Validate() error {
-	for _, key := range []string{consumer.KeyHandlerScriptRepository, registry.KeyHandlerScript} {
+	for _, key := range []string{consumer.KeyHandlerScriptRepository, consumer.KeyHandlerScriptRegistry} {
 		path := viper.GetString(key)
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			return err

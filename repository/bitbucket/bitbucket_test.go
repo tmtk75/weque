@@ -1,4 +1,4 @@
-package repository
+package bitbucket
 
 import (
 	"io/ioutil"
@@ -9,7 +9,7 @@ import (
 )
 
 func TestBitbucketWebhookProvider(t *testing.T) {
-	p, err := ioutil.ReadFile("../bitbucket/payload.json")
+	p, err := ioutil.ReadFile("../../bitbucket/payload.json")
 	assert.NoError(t, err)
 
 	b := &Bitbucket{}

@@ -12,9 +12,8 @@ import (
 )
 
 const (
-	KeyHandlerScript = "handlers.registry"
-	KeySecretToken   = weque.KeySecretToken
-	KeyInsecureMode  = weque.KeyInsecureMode
+	KeySecretToken  = weque.KeySecretToken
+	KeyInsecureMode = weque.KeyInsecureMode
 )
 
 func NewHandler(events chan<- *Webhook) http.HandlerFunc {

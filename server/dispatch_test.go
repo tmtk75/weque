@@ -10,6 +10,8 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/tmtk75/weque/repository"
+	bb "github.com/tmtk75/weque/repository/bitbucket"
+	gh "github.com/tmtk75/weque/repository/github"
 )
 
 func init() {
@@ -18,8 +20,8 @@ func init() {
 
 var (
 	ch         = make(chan<- *repository.Context)
-	github     = repository.NewHandler(&repository.Github{}, ch)
-	bitbucket  = repository.NewHandler(&repository.Bitbucket{}, ch)
+	github     = repository.NewHandler(&gh.Github{}, ch)
+	bitbucket  = repository.NewHandler(&bb.Bitbucket{}, ch)
 	dispatcher = NewDispatcher(github, bitbucket)
 )
 

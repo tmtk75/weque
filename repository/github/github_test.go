@@ -1,4 +1,4 @@
-package repository
+package github
 
 import (
 	"io/ioutil"
@@ -9,7 +9,7 @@ import (
 )
 
 func TestGithubWebhookProvider(t *testing.T) {
-	p, err := ioutil.ReadFile("../github/payload.json")
+	p, err := ioutil.ReadFile("../../github/payload.json")
 	assert.NoError(t, err)
 
 	b := &Github{}

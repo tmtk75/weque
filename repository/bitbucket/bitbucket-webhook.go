@@ -1,6 +1,10 @@
-package repository
+package bitbucket
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/tmtk75/weque/repository"
+)
 
 /*
  * This structure is for BitBucket webhook.
@@ -36,10 +40,10 @@ type BitbucketWebhook struct {
 }
 
 /*
- * Returns a Webhook converting itself.
+ * Returns a repository.Webhook converting itself.
  */
-func (body *BitbucketWebhook) Webhook() (*Webhook, error) {
-	var wb Webhook
+func (body *BitbucketWebhook) Webhook() (*repository.Webhook, error) {
+	var wb repository.Webhook
 	ch := body.Push["changes"][0]
 	switch ch.New.Type {
 	case "branch":

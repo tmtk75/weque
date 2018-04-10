@@ -1,4 +1,4 @@
-package repository
+package bitbucket
 
 import (
 	"encoding/json"
@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/spf13/viper"
+	"github.com/tmtk75/weque/repository"
 )
 
 type Bitbucket struct {
@@ -17,7 +18,7 @@ func (bb *Bitbucket) RequestID(r *http.Request) string {
 }
 
 func (bb *Bitbucket) Verify(r *http.Request, body []byte) error {
-	token := viper.GetString(KeySecretToken)
+	token := viper.GetString(repository.KeySecretToken)
 	secret := r.URL.Query().Get("secret")
 	if token != secret {
 		return fmt.Errorf("the given secret token didn't match")
@@ -29,7 +30,7 @@ func (s *Bitbucket) IsPing(r *http.Request, body []byte) bool {
 	return false
 }
 
-func (bb *Bitbucket) Unmarshal(r *http.Request, payload []byte) (*Webhook, error) {
+func (bb *Bitbucket) Unmarshal(r *http.Request, payload []byte) (*repository.Webhook, error) {
 	var body BitbucketWebhook
 	if err := json.Unmarshal(payload, &body); err != nil {
 		return nil, err
@@ -52,18 +53,18 @@ func (bb *Bitbucket) Unmarshal(r *http.Request, payload []byte) (*Webhook, error
 }
 
 /*
-func (bb *Bitbucket) NewKeyValue(r *http.Request, b []byte, wh *Webhook) (key string, val []byte, err error) {
+func (bb *Bitbucket) NewKeyValue(r *http.Request, b []byte, wh *repository.Webhook) (key string, val []byte, err error) {
 	key = fmt.Sprintf("weque/bitbucket/%v/%v/webhooks/%v",
 		wh.Repository.Owner.Name,
 		wh.Repository.Name,
 		wh.Delivery,
 	)
 	v, err := json.Marshal(struct {
-		Webhook *Webhook          `json:"webhook"`
+		repository.Webhook *repository.Webhook          `json:"webhook"`
 		Headers map[string]string `json:"headers"`
 		Payload []byte            `json:"payload"`
 	}{
-		Webhook: wh,
+		repository.Webhook: wh,
 		Headers: map[string]string{
 			"X-Attempt-Number": r.Header.Get("X-Attempt-Number"),
 			"X-Hook-UUID":      r.Header.Get("X-Hook-UUID"),
@@ -79,12 +80,12 @@ func (bb *Bitbucket) NewKeyValue(r *http.Request, b []byte, wh *Webhook) (key st
 	return
 }
 
-func (bb *Bitbucket) EventName(r *http.Request, b []byte, wh *Webhook) string {
+func (bb *Bitbucket) EventName(r *http.Request, b []byte, wh *repository.Webhook) string {
 	return fmt.Sprintf("bitbucket.%v", wh.Event)
 }
 */
 
-func (s *Bitbucket) WebhookProvider() WebhookProvider {
+func (s *Bitbucket) WebhookProvider() repository.WebhookProvider {
 	return s
 }
 
@@ -97,23 +98,23 @@ func (s *Bitbucket) IconURL() string {
 	return "https://www.atlassian.com/dam/jcr:e2a6f06f-b3d5-4002-aed3-73539c56a2eb/Bitbucket@2x-blue.png"
 }
 
-func (s *Bitbucket) RepositoryURL(w *Webhook) string {
+func (s *Bitbucket) RepositoryURL(w *repository.Webhook) string {
 	return fmt.Sprintf("https://bitbucket.org/%s/%s", w.Repository.Owner.Name, w.Repository.Name)
 }
 
-func (s *Bitbucket) CommitURL(w *Webhook) string {
+func (s *Bitbucket) CommitURL(w *repository.Webhook) string {
 	return fmt.Sprintf("%s/commits/%s", s.RepositoryURL(w), w.After)
 }
 
-func (s *Bitbucket) CompareURL(w *Webhook) string {
+func (s *Bitbucket) CompareURL(w *repository.Webhook) string {
 	return fmt.Sprintf("%s/branches/compare/%s..%s", s.RepositoryURL(w), w.Before, w.After)
 }
 
-func (s *Bitbucket) RefURL(w *Webhook) string {
+func (s *Bitbucket) RefURL(w *repository.Webhook) string {
 	ref := strings.TrimPrefix(w.Ref, "refs/heads/")
 	return fmt.Sprintf("%s/branch/%s", s.RepositoryURL(w), ref)
 }
 
-func (s *Bitbucket) PusherURL(w *Webhook) string {
+func (s *Bitbucket) PusherURL(w *repository.Webhook) string {
 	return fmt.Sprintf("https://bitbucket.org/%s", w.Pusher.Name)
 }

@@ -1,4 +1,4 @@
-package repository
+package github
 
 import (
 	"bytes"
@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/spf13/viper"
+	"github.com/tmtk75/weque/repository"
 )
 
 type Github struct {
@@ -39,7 +40,7 @@ func Verify(sign string, b []byte) error {
 	expected, _ := hex.DecodeString(string(sign[4+1 : len(sign)])) // 4+1 is to skip `sha1=`
 	expected = []byte(expected)
 
-	token := viper.GetString(KeySecretToken)
+	token := viper.GetString(repository.KeySecretToken)
 	mac := hmac.New(sha1.New, []byte(token))
 	mac.Write(b)
 	actual := mac.Sum(nil)
@@ -56,7 +57,7 @@ func (s *Github) IsPing(r *http.Request, body []byte) bool {
 	return e == "ping"
 }
 
-func (s *Github) Unmarshal(r *http.Request, b []byte) (*Webhook, error) {
+func (s *Github) Unmarshal(r *http.Request, b []byte) (*repository.Webhook, error) {
 	ctype := r.Header.Get("content-type")
 	switch strings.ToLower(ctype) {
 	case "application/x-www-form-urlencoded":
@@ -68,7 +69,7 @@ func (s *Github) Unmarshal(r *http.Request, b []byte) (*Webhook, error) {
 		if len(p) != 1 {
 			return nil, fmt.Errorf("unexpected payload for %v: %v", ctype, p)
 		}
-		log.Printf("[debug] payload: %v", Shorten(p[0], ShortenMax))
+		log.Printf("[debug] payload: %v", repository.Shorten(p[0], repository.ShortenMax))
 		b = []byte(r.Form["payload"][0])
 	case "application/json":
 		// NOP
@@ -76,7 +77,7 @@ func (s *Github) Unmarshal(r *http.Request, b []byte) (*Webhook, error) {
 		return nil, fmt.Errorf("unsupported content-type: %v", ctype)
 	}
 
-	var body Webhook
+	var body repository.Webhook
 	if err := json.Unmarshal(b, &body); err != nil {
 		return nil, err
 	}
@@ -85,7 +86,7 @@ func (s *Github) Unmarshal(r *http.Request, b []byte) (*Webhook, error) {
 	return &body, nil
 }
 
-func (s *Github) WebhookProvider() WebhookProvider {
+func (s *Github) WebhookProvider() repository.WebhookProvider {
 	return s
 }
 
@@ -98,22 +99,22 @@ func (s *Github) IconURL() string {
 	return "http://cdn.flaticon.com/png/256/25231.png"
 }
 
-func (s *Github) RepositoryURL(w *Webhook) string {
+func (s *Github) RepositoryURL(w *repository.Webhook) string {
 	return fmt.Sprintf("https://github.com/%s/%s", w.Repository.Owner.Name, w.Repository.Name)
 }
 
-func (s *Github) CommitURL(w *Webhook) string {
+func (s *Github) CommitURL(w *repository.Webhook) string {
 	return fmt.Sprintf("%s/commit/%s", s.RepositoryURL(w), w.After)
 }
 
-func (s *Github) CompareURL(w *Webhook) string {
+func (s *Github) CompareURL(w *repository.Webhook) string {
 	return fmt.Sprintf("%s/compare/%s...%s?w=1", s.RepositoryURL(w), w.Before, w.After)
 }
 
-func (s *Github) RefURL(w *Webhook) string {
+func (s *Github) RefURL(w *repository.Webhook) string {
 	return fmt.Sprintf("%s/tree/%s", s.RepositoryURL(w), w.Ref)
 }
 
-func (s *Github) PusherURL(w *Webhook) string {
+func (s *Github) PusherURL(w *repository.Webhook) string {
 	return fmt.Sprintf("https://github.com/%s", w.Pusher.Name)
 }

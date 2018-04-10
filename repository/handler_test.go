@@ -2,6 +2,7 @@ package repository
 
 import (
 	"bytes"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -12,10 +13,12 @@ import (
 )
 
 type Test struct {
-	Github
 }
 
 func (t *Test) Verify(r *http.Request, body []byte) error {
+	if "expect to fail" == string(body) {
+		return errors.New("hi")
+	}
 	return nil
 }
 
@@ -25,6 +28,14 @@ func (t *Test) IsPing(r *http.Request, body []byte) bool {
 
 func (t *Test) Unmarshal(r *http.Request, body []byte) (*Webhook, error) {
 	return &Webhook{}, nil
+}
+
+func (t *Test) RequestID(r *http.Request) string {
+	return ""
+}
+
+func (t *Test) WebhookProvider() WebhookProvider {
+	return nil
 }
 
 func TestNewHandler(t *testing.T) {
@@ -46,8 +57,8 @@ func TestNewHandler(t *testing.T) {
 }
 
 func TestHandlerInsecure(t *testing.T) {
-	req := httptest.NewRequest("POST", "http://example.com", bytes.NewBufferString("{}"))
-	h := NewHandler(&Github{}, make(chan<- *Context))
+	req := httptest.NewRequest("POST", "http://example.com", bytes.NewBufferString("expect to fail"))
+	h := NewHandler(&Test{}, make(chan<- *Context))
 	viper.Set(KeySecretToken, "abc123")
 
 	// secure
@@ -68,8 +79,8 @@ func TestHandlerInsecure(t *testing.T) {
 		h(r, req)
 		res := r.Result()
 		body, _ := ioutil.ReadAll(res.Body)
-		assert.Equal(t, 400, res.StatusCode)
-		assert.Regexp(t, "failed to unmarshal", string(body))
+		assert.Equal(t, 200, res.StatusCode)
+		assert.Regexp(t, "", string(body))
 	})
 
 	viper.Set(KeyInsecureMode, false)

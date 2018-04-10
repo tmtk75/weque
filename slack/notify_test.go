@@ -11,6 +11,8 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/tmtk75/weque/repository"
+	bb "github.com/tmtk75/weque/repository/bitbucket"
+	gh "github.com/tmtk75/weque/repository/github"
 )
 
 type capture struct {
@@ -100,7 +102,7 @@ func TestNotify(t *testing.T) {
 				authorIcon: icon, authorName: "github", color: "danger", attachmentText: "\ndelivery:<",
 			},
 		}
-		run(expects, &repository.Github{})
+		run(expects, &gh.Github{})
 	})
 
 	// Bitbucket
@@ -118,7 +120,7 @@ func TestNotify(t *testing.T) {
 				authorIcon: icon, authorName: "bitbucket", color: "danger", attachmentText: "\ndelivery:<",
 			},
 		}
-		run(expects, &repository.Bitbucket{})
+		run(expects, &bb.Bitbucket{})
 	})
 
 }
