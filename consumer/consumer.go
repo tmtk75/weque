@@ -35,7 +35,11 @@ func StartRepositoryConsumer(events <-chan *repository.Context) {
 		}
 		log.Printf("finished. delivery: %v", wb.Delivery)
 
-		if err := slack.Notify(ctx, err); err != nil {
+		inwh, err := slack.NewIncomingWebhook(wb, ctx.WebhookProvider, err)
+		if err != nil {
+			log.Printf("[error] %v", err)
+		}
+		if err := slack.Notify(inwh); err != nil {
 			log.Printf("[error] %v", err)
 		}
 	}
@@ -56,7 +60,11 @@ func StartRegistryConsumer(events <-chan *registry.Webhook) {
 		}
 		log.Printf("finished. id: %v", e.ID)
 
-		if err := slack.NotifyRegistry(e, err); err != nil {
+		inwh, err := slack.NewRegistryIncomingWebhook(e, err)
+		if err != nil {
+			log.Printf("[error] %v", err)
+		}
+		if err := slack.Notify(inwh); err != nil {
 			log.Printf("[error] %v", err)
 		}
 	}

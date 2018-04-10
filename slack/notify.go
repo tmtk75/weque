@@ -11,7 +11,6 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
-	"github.com/tmtk75/weque/repository"
 )
 
 const (
@@ -24,11 +23,7 @@ func init() {
 	viper.BindEnv(KEY_CHANNEL_NAME, "SLACK_CHANNEL_NAME")
 }
 
-func Notify(c *repository.Context, err error) error {
-	wh, err := newIncomingWebhook(c.Webhook, c.WebhookProvider, err)
-	if err != nil {
-		return err
-	}
+func Notify(wh *IncomingWebhook) error {
 	if err := request(wh); err != nil {
 		return err
 	}

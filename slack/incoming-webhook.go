@@ -25,7 +25,7 @@ type Attachment struct {
 	Text       string `json:"text"`
 }
 
-func newIncomingWebhook(w *repository.Webhook, u repository.WebhookProvider, exiterr error) (*IncomingWebhook, error) {
+func NewIncomingWebhook(w *repository.Webhook, u repository.WebhookProvider, exiterr error) (*IncomingWebhook, error) {
 	templ := `
 delivery:<{{ .RepositoryURL }}/settings/hooks|{{ .Delivery }}>
 head_commit:<{{ .CommitURL }}?w=1|{{ .AfterShort }}>

@@ -2,26 +2,13 @@ package slack
 
 import (
 	"bytes"
-	"log"
 	"text/template"
 
 	"github.com/pkg/errors"
 	"github.com/tmtk75/weque/registry"
 )
 
-func NotifyRegistry(e *registry.Event, err error) error {
-	wh, err := newRegistryIncomingWebhook(e, err)
-	if err != nil {
-		return err
-	}
-	if err := request(wh); err != nil {
-		return err
-	}
-	log.Printf("notified to slack channel, %v", wh.Channel)
-	return nil
-}
-
-func newRegistryIncomingWebhook(e *registry.Event, exiterr error) (*IncomingWebhook, error) {
+func NewRegistryIncomingWebhook(e *registry.Event, exiterr error) (*IncomingWebhook, error) {
 	templ := `
 repository:{{ .Event.Target.Repository }}
 tag:{{ .Event.Target.Tag }}

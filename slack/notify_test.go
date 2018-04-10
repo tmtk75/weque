@@ -65,8 +65,8 @@ func TestNotify(t *testing.T) {
 
 	run := func(expects []incomingWebHook, provider repository.WebhookProvider) {
 		for _, e := range expects {
-			ctx := &repository.Context{Webhook: &w, WebhookProvider: provider}
-			err = Notify(ctx, e.err)
+			wh, _ := NewIncomingWebhook(&w, provider, e.err)
+			err = Notify(wh)
 
 			assert.NoError(t, err)
 			assert.NotNil(t, cap.request)
