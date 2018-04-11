@@ -7,12 +7,12 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/spf13/viper"
-	"github.com/tmtk75/weque/consumer"
 	"github.com/tmtk75/weque/registry"
+	"github.com/tmtk75/weque/registry/worker"
 	"github.com/tmtk75/weque/repository"
 	bb "github.com/tmtk75/weque/repository/bitbucket"
 	gh "github.com/tmtk75/weque/repository/github"
-	"github.com/tmtk75/weque/slack"
+	"github.com/tmtk75/weque/repository/worker"
 )
 
 const (
@@ -45,13 +45,8 @@ func (s *Server) Start() error {
 	e.POST("/repository/github", Wrap(e, github))
 	e.POST("/repository/bitbucket", Wrap(e, bitbucket))
 
-	out2 := make(chan *consumer.Event)
-	go consumer.StartRepositoryConsumer(s.repositoryEvents, out2)
-	go Fiz(out2)
-
-	out := make(chan *consumer.Event)
-	go consumer.StartRegistryConsumer(s.registryEvents, out)
-	go Bar(out)
+	go repositoryworker.Notify(repositoryworker.Run(s.repositoryEvents))
+	go registryworker.Notify(registryworker.Run(s.registryEvents))
 
 	var err error
 	if !viper.GetBool(KeyACMEEnabled) {
@@ -67,30 +62,6 @@ func (s *Server) Start() error {
 	return nil
 }
 
-func Fiz(ch <-chan *consumer.Event) {
-	for e := range ch {
-		inwh, err := slack.NewIncomingWebhook(e.Context.Webhook, e.Context.WebhookProvider, e.Err)
-		if err != nil {
-			log.Printf("[error] %v", err)
-		}
-		if err := slack.Notify(inwh); err != nil {
-			log.Printf("[error] %v", err)
-		}
-	}
-}
-
-func Bar(ch <-chan *consumer.Event) {
-	for e := range ch {
-		inwh, err := slack.NewRegistryIncomingWebhook(e.Event, e.Err)
-		if err != nil {
-			log.Printf("[error] %v", err)
-		}
-		if err := slack.Notify(inwh); err != nil {
-			log.Printf("[error] %v", err)
-		}
-	}
-}
-
 func Wrap(e *echo.Echo, h http.HandlerFunc) func(echo.Context) error {
 	return func(c echo.Context) error {
 		h.ServeHTTP(c.Response(), c.Request())
@@ -99,7 +70,7 @@ func Wrap(e *echo.Echo, h http.HandlerFunc) func(echo.Context) error {
 }
 
 func Validate() error {
-	for _, key := range []string{consumer.KeyHandlerScriptRepository, consumer.KeyHandlerScriptRegistry} {
+	for _, key := range []string{repositoryworker.KeyHandlerScriptRepository, registryworker.KeyHandlerScriptRegistry} {
 		path := viper.GetString(key)
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			return err
