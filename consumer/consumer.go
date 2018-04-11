@@ -15,57 +15,42 @@ const (
 	KeyHandlerScriptRepository = "handlers.repository"
 )
 
-func Start(repo <-chan *repository.Context, reg <-chan *registry.Webhook) {
-	go StartRepositoryConsumer(repo)
-	go StartRegistryConsumer(reg)
-}
-
-func StartRepositoryConsumer(events <-chan *repository.Context) {
+func StartRepositoryConsumer(events <-chan *repository.Context, out chan<- *Event) {
 	log.Printf("repository consumer started")
-	for {
-		ctx := <-events
-		wb := ctx.Webhook
-		log.Printf("started. delivery: %v", wb.Delivery)
+	for c := range events {
+		w := c.Webhook
+		log.Printf("started. delivery: %v", w.Delivery)
 
 		rh := viper.GetString(KeyHandlerScriptRepository)
-
-		err := weque.Run(wb.Env(), ".", rh)
+		err := weque.Run(w.Env(), ".", rh)
 		if err != nil {
 			log.Printf("[error] %v", err)
 		}
-		log.Printf("finished. delivery: %v", wb.Delivery)
-
-		inwh, err := slack.NewIncomingWebhook(wb, ctx.WebhookProvider, err)
-		if err != nil {
-			log.Printf("[error] %v", err)
-		}
-		if err := slack.Notify(inwh); err != nil {
-			log.Printf("[error] %v", err)
-		}
+		out <- &Event{Context: c, Err: err}
+		log.Printf("finished. id: %v", w.Delivery)
 	}
 }
 
-func StartRegistryConsumer(events <-chan *registry.Webhook) {
+var notifier = slack.Notify
+
+func StartRegistryConsumer(events <-chan *registry.Webhook, out chan<- *Event) {
 	log.Printf("registry consumer started")
-	for {
-		wh := <-events
-		e := &wh.Events[0] // 1 event is ensured
+	for w := range events {
+		e := w.Events[0]
 		log.Printf("started. id: %v", e.ID)
 
 		rh := viper.GetString(KeyHandlerScriptRegistry)
-
 		err := weque.Run(e.Env(), ".", rh)
 		if err != nil {
 			log.Printf("[error] %v", err)
 		}
+		out <- &Event{Event: &e, Err: err}
 		log.Printf("finished. id: %v", e.ID)
-
-		inwh, err := slack.NewRegistryIncomingWebhook(e, err)
-		if err != nil {
-			log.Printf("[error] %v", err)
-		}
-		if err := slack.Notify(inwh); err != nil {
-			log.Printf("[error] %v", err)
-		}
 	}
+}
+
+type Event struct {
+	Event   *registry.Event
+	Context *repository.Context
+	Err     error
 }
