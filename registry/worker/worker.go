@@ -20,7 +20,7 @@ func Run(events <-chan *registry.Webhook) <-chan *Event {
 	out := make(chan *Event)
 	go func() {
 		for w := range events {
-			e := w.Events[0]
+			e := w.Events[0] // ensured
 			log.Printf("started. id: %v", e.ID)
 
 			rh := viper.GetString(KeyHandlerScriptRegistry)
@@ -38,16 +38,25 @@ func Run(events <-chan *registry.Webhook) <-chan *Event {
 	return out
 }
 
-func Notify(ch <-chan *Event) {
+var notifier = slack.Notify
+
+func Notify(ch <-chan *Event) <-chan error {
+	out := make(chan error)
 	log.Printf("registry worker to notify start")
-	for e := range ch {
-		inwh, err := slack.NewRegistryIncomingWebhook(e.Event, e.Err)
-		if err != nil {
-			log.Printf("[error] %v", err)
+	go func() {
+		for e := range ch {
+			inwh, err := slack.NewRegistryIncomingWebhook(e.Event, e.Err)
+			if err != nil {
+				log.Printf("[error] %v", err)
+				continue
+			}
+			if err := notifier(inwh); err != nil {
+				log.Printf("[error] %v", err)
+				continue
+			}
+			out <- nil
 		}
-		if err := slack.Notify(inwh); err != nil {
-			log.Printf("[error] %v", err)
-		}
-	}
+	}()
 	log.Printf("registry worker to notify stopped")
+	return out
 }

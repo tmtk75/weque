@@ -45,8 +45,8 @@ func (s *Server) Start() error {
 	e.POST("/repository/github", Wrap(e, github))
 	e.POST("/repository/bitbucket", Wrap(e, bitbucket))
 
-	go repositoryworker.Notify(repositoryworker.Run(s.repositoryEvents))
-	go registryworker.Notify(registryworker.Run(s.registryEvents))
+	repositoryworker.Notify(repositoryworker.Run(s.repositoryEvents))
+	registryworker.Notify(registryworker.Run(s.registryEvents))
 
 	var err error
 	if !viper.GetBool(KeyACMEEnabled) {

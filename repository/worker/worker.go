@@ -40,16 +40,27 @@ func Run(events <-chan *repository.Context) <-chan *Context {
 	return out
 }
 
-func Notify(ch <-chan *Context) {
+var notifier = slack.Notify
+
+func Notify(ch <-chan *Context) <-chan error {
+	out := make(chan error)
 	log.Printf("repository worker to notify start")
-	for e := range ch {
-		inwh, err := slack.NewIncomingWebhook(e.Context.Webhook, e.Context.WebhookProvider, e.Err)
-		if err != nil {
-			log.Printf("[error] %v", err)
+	go func() {
+		for e := range ch {
+			inwh, err := slack.NewIncomingWebhook(e.Context.Webhook, e.Context.WebhookProvider, e.Err)
+			if err != nil {
+				log.Printf("[error] %v", err)
+				out <- err
+				continue
+			}
+			if err := notifier(inwh); err != nil {
+				log.Printf("[error] %v", err)
+				out <- err
+				continue
+			}
+			out <- nil
 		}
-		if err := slack.Notify(inwh); err != nil {
-			log.Printf("[error] %v", err)
-		}
-	}
-	log.Printf("repository worker to notify stopped")
+		log.Printf("repository worker to notify stopped")
+	}()
+	return out
 }
