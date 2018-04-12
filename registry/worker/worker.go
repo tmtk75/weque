@@ -45,7 +45,7 @@ func Notify(ch <-chan *Event) <-chan error {
 	log.Printf("registry worker to notify start")
 	go func() {
 		for e := range ch {
-			inwh, err := slack.NewRegistryIncomingWebhook(e.Event, e.Err)
+			inwh, err := slack.NewIncomingWebhookRegistry(e.Event, e.Err)
 			if err != nil {
 				log.Printf("[error] %v", err)
 				continue

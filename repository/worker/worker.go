@@ -47,7 +47,7 @@ func Notify(ch <-chan *Context) <-chan error {
 	log.Printf("repository worker to notify start")
 	go func() {
 		for e := range ch {
-			inwh, err := slack.NewIncomingWebhook(e.Context.Webhook, e.Context.WebhookProvider, e.Err)
+			inwh, err := slack.NewIncomingWebhookRepository(e.Context.Webhook, e.Context.WebhookProvider, e.Err)
 			if err != nil {
 				log.Printf("[error] %v", err)
 				out <- err

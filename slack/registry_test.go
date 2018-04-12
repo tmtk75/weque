@@ -44,7 +44,7 @@ func TestNotifyRegistry(t *testing.T) {
 	}
 
 	for _, e := range expects {
-		wh, _ := NewRegistryIncomingWebhook(event, e.err)
+		wh, _ := NewIncomingWebhookRegistry(event, e.err)
 		Notify(wh)
 		defer cap.request.Body.Close()
 		body, _ := ioutil.ReadAll(cap.request.Body)

@@ -8,7 +8,7 @@ import (
 	"github.com/tmtk75/weque/registry"
 )
 
-func NewRegistryIncomingWebhook(e *registry.Event, exiterr error) (*IncomingWebhook, error) {
+func NewIncomingWebhookRegistry(e *registry.Event, exiterr error) (*IncomingWebhook, error) {
 	templ := `
 repository:{{ .Event.Target.Repository }}
 tag:{{ .Event.Target.Tag }}
