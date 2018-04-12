@@ -17,3 +17,13 @@ func TestNewIncomingWebhook(t *testing.T) {
 	expected := "\ndelivery:<https://github.com///settings/hooks|>\nhead_commit:<https://github.com///commit/0123456?w=1|0123456>\nref:<https://github.com///tree/|/:>\ncompare:<https://github.com///compare/0123456...0123456?w=1|0123456...0123456>\npusher:<https://github.com/|>\nstatus:$status\n"
 	assert.Equal(t, expected, iw.Attachments[0].Text)
 }
+
+func TestNewIncomingWebhookBeforeAfter(t *testing.T) {
+	w := &repository.Webhook{Before: "0123456"}
+	_, err := NewIncomingWebhook(w, &gh.Github{}, nil)
+	assert.Error(t, err)
+
+	w = &repository.Webhook{After: "0123456"}
+	_, err = NewIncomingWebhook(w, &gh.Github{}, nil)
+	assert.Error(t, err)
+}

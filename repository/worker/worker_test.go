@@ -36,5 +36,5 @@ func TestNotify(t *testing.T) {
 	err := <-out
 
 	assert.True(t, called)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 }

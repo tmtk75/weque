@@ -35,6 +35,13 @@ pusher:<{{ .PusherURL }}|{{ .Pusher.Name }}>
 status:$status
 `
 
+	if len(w.Before) < 7 {
+		return nil, errors.New("Before is less than 7")
+	}
+	if len(w.After) < 7 {
+		return nil, errors.New("After is less than 7")
+	}
+
 	t := template.Must(template.New("").Parse(templ))
 	text := bytes.NewBufferString("")
 	err := t.Execute(text, struct {
