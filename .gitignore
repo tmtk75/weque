@@ -1,17 +1,17 @@
 # dev
 .*.swp
-vendor
+vendor/
 credentials
 
 # bin
-weque
+/weque
 traefik
 
 # tmp
 *.out
 *.log
 acme.json
-data
+./data
 
 *.txt
 *.json
