@@ -56,17 +56,11 @@ func (w Webhook) Bytes() []byte {
 }
 
 func Request(method, path string, body io.Reader) (string, error) {
-	var (
-		token    = os.Getenv("GITHUB_TOKEN")
-		endpoint = "https://api.github.com"
-	)
-
-	req, err := http.NewRequest(method, fmt.Sprintf("%s%s", endpoint, path), body)
+	req, err := makeRequest(method, path, body)
 	if err != nil {
 		log.Print(err)
 		return "", err
 	}
-	req.Header.Add("Authorization", fmt.Sprintf("token %v", token))
 
 	c := http.Client{}
 	res, err := c.Do(req)
@@ -83,4 +77,19 @@ func Request(method, path string, body io.Reader) (string, error) {
 	}
 
 	return string(b), nil
+}
+
+func makeRequest(method, path string, body io.Reader) (*http.Request, error) {
+	var (
+		token    = os.Getenv("GITHUB_TOKEN")
+		endpoint = "https://api.github.com"
+	)
+
+	req, err := http.NewRequest(method, fmt.Sprintf("%s%s", endpoint, path), body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Authorization", fmt.Sprintf("token %v", token))
+
+	return req, nil
 }

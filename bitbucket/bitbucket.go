@@ -84,6 +84,7 @@ func makeRequest(user, method, path string, body io.Reader) (*http.Request, erro
 
 	req, err := http.NewRequest(method, fmt.Sprintf("%s%s", endpoint, path), body)
 	if err != nil {
+		log.Print(err)
 		return nil, err
 	}
 	token := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", user, apikey)))
