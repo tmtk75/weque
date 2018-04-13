@@ -50,18 +50,10 @@ func (w Webhook) Bytes() []byte {
 }
 
 func Request(user, method, path string, body io.Reader) (string, error) {
-	var (
-		apikey   = os.Getenv("BITBUCKET_API_KEY")
-		endpoint = "https://api.bitbucket.org/2.0/repositories"
-	)
-
-	req, err := http.NewRequest(method, fmt.Sprintf("%s%s", endpoint, path), body)
+	req, err := makeRequest(user, method, path, body)
 	if err != nil {
-		log.Print(err)
 		return "", err
 	}
-	token := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", user, apikey)))
-	req.Header.Add("Authorization", fmt.Sprintf("Basic %v", token))
 
 	c := http.Client{}
 	res, err := c.Do(req)
@@ -82,4 +74,20 @@ func Request(user, method, path string, body io.Reader) (string, error) {
 	}
 
 	return string(b), nil
+}
+
+func makeRequest(user, method, path string, body io.Reader) (*http.Request, error) {
+	var (
+		apikey   = os.Getenv("BITBUCKET_API_KEY")
+		endpoint = "https://api.bitbucket.org/2.0/repositories"
+	)
+
+	req, err := http.NewRequest(method, fmt.Sprintf("%s%s", endpoint, path), body)
+	if err != nil {
+		return nil, err
+	}
+	token := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", user, apikey)))
+	req.Header.Add("Authorization", fmt.Sprintf("Basic %v", token))
+
+	return req, nil
 }
