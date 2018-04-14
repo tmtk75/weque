@@ -43,40 +43,44 @@ var serverCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(serverCmd)
-
 	pflags := serverCmd.PersistentFlags()
 
-	pflags.StringP(server.KeyPort, "p", ":9981", "port to listen")
-	viper.BindPFlag(server.KeyPort, pflags.Lookup(server.KeyPort))
+	// string options
+	stropts := []struct {
+		k    string
+		v    string
+		desc string
+	}{
+		{k: server.KeyPort, v: ":9981", desc: "port to listen"},
+		{k: server.KeyTLSPort, v: ":https", desc: "port in TLS to listen"},
+		{k: server.KeyTLSCertFile, v: "", desc: "cert file to listen in TLS"},
+		{k: server.KeyTLSKeyFile, v: "", desc: "keyfile to listen in TLS"},
+		{k: server.KeyACMEPort, v: ":http", desc: "port to listen for ACME challenge"},
+		{k: weque.KeyPrefix, v: "", desc: "prefix for environment variable"},
+		{k: repositoryworker.KeyHandlerScriptRepository, v: "./handlers/repository", desc: "handler script for repository"},
+		{k: registryworker.KeyHandlerScriptRegistry, v: "./handlers/registry", desc: "handler script for registry"},
+	}
 
-	pflags.Bool(server.KeyTLSEnabled, false, "enable TLS")
-	viper.BindPFlag(server.KeyTLSEnabled, pflags.Lookup(server.KeyTLSEnabled))
+	// boolean options
+	boolopts := []struct {
+		k    string
+		v    bool
+		desc string
+	}{
+		{k: server.KeyTLSEnabled, v: false, desc: "enable TLS"},
+		{k: server.KeyACMEEnabled, v: false, desc: "enable ACME to use Let's Encrypt"},
+		{k: weque.KeyInsecureMode, v: false, desc: "skip steps to verify for development"},
+	}
 
-	pflags.String(server.KeyTLSPort, ":https", "port in TLS to listen")
-	viper.BindPFlag(server.KeyTLSPort, pflags.Lookup(server.KeyTLSPort))
+	for _, e := range stropts {
+		pflags.String(e.k, e.v, e.desc)
+		viper.BindPFlag(e.k, pflags.Lookup(e.k))
+	}
 
-	pflags.String(server.KeyTLSCertFile, "", "cert file to listen in TLS")
-	viper.BindPFlag(server.KeyTLSCertFile, pflags.Lookup(server.KeyTLSCertFile))
+	for _, e := range boolopts {
+		pflags.Bool(e.k, e.v, e.desc)
+		viper.BindPFlag(e.k, pflags.Lookup(e.k))
+	}
 
-	pflags.String(server.KeyTLSKeyFile, "", "keyfile to listen in TLS")
-	viper.BindPFlag(server.KeyTLSKeyFile, pflags.Lookup(server.KeyTLSKeyFile))
-
-	pflags.Bool(server.KeyACMEEnabled, false, "enable ACME to use Let's Encrypt")
-	viper.BindPFlag(server.KeyACMEEnabled, pflags.Lookup(server.KeyACMEEnabled))
-
-	pflags.String(server.KeyACMEPort, ":http", "port to listen for ACME challenge")
-	viper.BindPFlag(server.KeyACMEPort, pflags.Lookup(server.KeyACMEPort))
-
-	pflags.String(weque.KeyPrefix, "", "prefix for environment variable")
-	viper.BindPFlag(weque.KeyPrefix, pflags.Lookup(weque.KeyPrefix))
-
-	pflags.String(repositoryworker.KeyHandlerScriptRepository, "./handlers/repository", "handler script for repository")
-	viper.BindPFlag(repositoryworker.KeyHandlerScriptRepository, pflags.Lookup(repositoryworker.KeyHandlerScriptRepository))
-
-	pflags.String(registryworker.KeyHandlerScriptRegistry, "./handlers/registry", "handler script for registry")
-	viper.BindPFlag(registryworker.KeyHandlerScriptRegistry, pflags.Lookup(registryworker.KeyHandlerScriptRegistry))
-
-	pflags.Bool(weque.KeyInsecureMode, false, "skip steps to verify for development")
-	viper.BindPFlag(weque.KeyInsecureMode, pflags.Lookup(weque.KeyInsecureMode))
 	viper.BindEnv(weque.KeyInsecureMode, "INSECURE")
 }

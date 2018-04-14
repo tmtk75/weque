@@ -48,6 +48,8 @@ func (s *Server) Start() error {
 	repositoryworker.Notify(repositoryworker.Run(s.repositoryEvents))
 	registryworker.Notify(registryworker.Run(s.registryEvents))
 
+	//log.Printf("insecure: %v", viper.GetBool(KeyInsecure))
+
 	var err error
 	if viper.GetBool(KeyTLSEnabled) {
 		err = ListenAndServeTLS(e)
