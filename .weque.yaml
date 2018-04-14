@@ -3,8 +3,10 @@ port: :9981
 tls:
   # port: :1443
   acme:
-    # enabled: true
+    # enabled: false
     # challenge-port: :80
+    host-whitelist: ["test.example.com"]
+    cache-dir: "certs"
 
 prefix: ""
 

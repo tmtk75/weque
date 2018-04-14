@@ -20,6 +20,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/tmtk75/weque"
 	"github.com/tmtk75/weque/registry/worker"
 	"github.com/tmtk75/weque/repository"
 	"github.com/tmtk75/weque/repository/worker"
@@ -56,7 +57,7 @@ func init() {
 	viper.BindPFlag(server.KeyACMEChallengePort, pflags.Lookup("acme.challenge-port"))
 
 	pflags.String("prefix", "", "prefix for environment variable")
-	viper.BindPFlag("prefix", pflags.Lookup("prefix"))
+	viper.BindPFlag(weque.KeyPrefix, pflags.Lookup("prefix"))
 
 	pflags.String("repository-handler", "./handlers/repository", "handler script for repository")
 	viper.BindPFlag(repositoryworker.KeyHandlerScriptRepository, pflags.Lookup("repository-handler"))

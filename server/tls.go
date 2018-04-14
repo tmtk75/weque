@@ -21,7 +21,7 @@ const (
 
 func init() {
 	viper.SetDefault(KeyACMECacheDir, "certs")
-	viper.SetDefault(KeyACMEHostWhitelist, []string{"example.com"})
+	viper.SetDefault(KeyACMEHostWhitelist, []string{"test.example.com"})
 }
 
 func ListenAndServeTLS(h http.Handler) error {

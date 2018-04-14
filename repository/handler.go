@@ -10,10 +10,6 @@ import (
 	"github.com/tmtk75/weque"
 )
 
-func init() {
-	viper.BindEnv(KeySecretToken, "SECRET_TOKEN")
-}
-
 type Handler interface {
 	/*
 	 * Return the requiest ID string
