@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/spf13/viper"
+	"github.com/tmtk75/weque"
 	"github.com/tmtk75/weque/repository"
 )
 
@@ -69,7 +70,7 @@ func (s *Github) Unmarshal(r *http.Request, b []byte) (*repository.Webhook, erro
 		if len(p) != 1 {
 			return nil, fmt.Errorf("unexpected payload for %v: %v", ctype, p)
 		}
-		log.Printf("[debug] payload: %v", repository.Shorten(p[0], repository.ShortenMax))
+		log.Printf("[debug] payload: %v", repository.Shorten(p[0], weque.ShortenMax))
 		b = []byte(r.Form["payload"][0])
 	case "application/json":
 		// NOP
