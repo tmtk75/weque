@@ -11,7 +11,11 @@ import (
 	"github.com/spf13/viper"
 )
 
-const KeyTLSEnabled = "tls.enabled"
+const (
+	KeyTLSEnabled  = "tls.enabled"
+	KeyTLSCertFile = "tls.cert_file"
+	KeyTLSKeyFile  = "tls.key_file"
+)
 
 func init() {
 	viper.SetDefault(KeyACMECacheDir, "certs")
@@ -37,6 +41,8 @@ func ListenAndServeTLS(h http.Handler) error {
 	getCert := GetCertificateLocalhost
 	if viper.GetBool(KeyACMEEnabled) {
 		challenge, getCert = ConfigureACME(ch)
+	} else {
+		getCert = GetCertificateFile
 	}
 
 	server := &http.Server{
@@ -60,6 +66,19 @@ func ListenAndServeTLS(h http.Handler) error {
 	log.Printf("challenge shutdown: %v", challenge.Shutdown(context.Background()))
 	log.Printf("tls shutdown: %v", server.Shutdown(context.Background()))
 	return nil
+}
+
+func GetCertificateFile(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
+	var (
+		cert = viper.GetString(KeyTLSCertFile)
+		key  = viper.GetString(KeyTLSKeyFile)
+	)
+	log.Printf("cert_file: %v, key_file: %v", cert, key)
+	c, err := tls.LoadX509KeyPair(cert, key)
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
 }
 
 // for testing

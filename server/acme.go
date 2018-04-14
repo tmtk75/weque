@@ -13,8 +13,8 @@ import (
 const (
 	KeyACMEEnabled       = "tls.acme.enabled"
 	KeyACMEPort          = "tls.acme.port"
-	KeyACMEHostWhitelist = "tls.acme.host-whitelist"
-	KeyACMECacheDir      = "tls.acme.cache-dir"
+	KeyACMEHostWhitelist = "tls.acme.host_whitelist"
+	KeyACMECacheDir      = "tls.acme.cache_dir"
 )
 
 type GetCert func(*tls.ClientHelloInfo) (*tls.Certificate, error)

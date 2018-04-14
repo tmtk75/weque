@@ -54,7 +54,7 @@ func init() {
 	githubCmd.AddCommand(tfgenCmd)
 	pflags := tfgenCmd.PersistentFlags()
 	pflags.StringP("content-type", "c", "application/json", "content-type")
-	viper.BindPFlag("content-type", tfgenCmd.PersistentFlags().Lookup("content-type"))
+	viper.BindPFlag("content_type", tfgenCmd.PersistentFlags().Lookup("content-type"))
 }
 
 var listCmd = &cobra.Command{

@@ -55,6 +55,12 @@ func init() {
 	pflags.String(server.KeyTLSPort, ":https", "port in TLS to listen")
 	viper.BindPFlag(server.KeyTLSPort, pflags.Lookup(server.KeyTLSPort))
 
+	pflags.String(server.KeyTLSCertFile, "", "cert file to listen in TLS")
+	viper.BindPFlag(server.KeyTLSCertFile, pflags.Lookup(server.KeyTLSCertFile))
+
+	pflags.String(server.KeyTLSKeyFile, "", "keyfile to listen in TLS")
+	viper.BindPFlag(server.KeyTLSKeyFile, pflags.Lookup(server.KeyTLSKeyFile))
+
 	pflags.Bool(server.KeyACMEEnabled, false, "enable ACME to use Let's Encrypt")
 	viper.BindPFlag(server.KeyACMEEnabled, pflags.Lookup(server.KeyACMEEnabled))
 
