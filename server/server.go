@@ -79,10 +79,3 @@ func Validate() error {
 	}
 	return nil
 }
-
-func ListenAndServe(e http.Handler) error {
-	port := viper.GetString(KeyPort)
-	log.Printf("start listening at %s", port)
-	err := http.ListenAndServe(port, e)
-	return err
-}
