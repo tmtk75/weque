@@ -12,7 +12,7 @@ import (
 
 const (
 	KeyACMEEnabled       = "tls.acme.enabled"
-	KeyACMEChallengePort = "tls.acme.challenge-port"
+	KeyACMEPort          = "tls.acme.port"
 	KeyACMEHostWhitelist = "tls.acme.host-whitelist"
 	KeyACMECacheDir      = "tls.acme.cache-dir"
 )
@@ -32,7 +32,7 @@ func ConfigureACME(ch chan<- os.Signal) (*http.Server, GetCert) {
 		Cache:      autocert.DirCache(cachedir), // to store certs
 	}
 
-	addr := viper.GetString(KeyACMEChallengePort)
+	addr := viper.GetString(KeyACMEPort)
 	challenge := &http.Server{Addr: addr, Handler: mgr.HTTPHandler(nil)}
 
 	go func() {

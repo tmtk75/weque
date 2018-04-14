@@ -46,28 +46,31 @@ func init() {
 
 	pflags := serverCmd.PersistentFlags()
 
-	pflags.StringP("port", "p", ":9981", "port to listen")
-	viper.BindPFlag(server.KeyPort, pflags.Lookup("port"))
+	pflags.StringP(server.KeyPort, "p", ":9981", "port to listen")
+	viper.BindPFlag(server.KeyPort, pflags.Lookup(server.KeyPort))
 
-	pflags.String("tls.port", ":https", "port in TLS to listen")
-	viper.BindPFlag(server.KeyTLSPort, pflags.Lookup("tls.port"))
+	pflags.Bool(server.KeyTLSEnabled, false, "enable TLS")
+	viper.BindPFlag(server.KeyTLSEnabled, pflags.Lookup(server.KeyTLSEnabled))
 
-	pflags.Bool("acme.enabled", false, "Enable Let's Encrypt")
-	viper.BindPFlag(server.KeyACMEEnabled, pflags.Lookup("acme.enabled"))
+	pflags.String(server.KeyTLSPort, ":https", "port in TLS to listen")
+	viper.BindPFlag(server.KeyTLSPort, pflags.Lookup(server.KeyTLSPort))
 
-	pflags.String("acme.challenge-port", ":http", "port to listen for ACME challenge")
-	viper.BindPFlag(server.KeyACMEChallengePort, pflags.Lookup("acme.challenge-port"))
+	pflags.Bool(server.KeyACMEEnabled, false, "enable ACME to use Let's Encrypt")
+	viper.BindPFlag(server.KeyACMEEnabled, pflags.Lookup(server.KeyACMEEnabled))
 
-	pflags.String("prefix", "", "prefix for environment variable")
-	viper.BindPFlag(weque.KeyPrefix, pflags.Lookup("prefix"))
+	pflags.String(server.KeyACMEPort, ":http", "port to listen for ACME challenge")
+	viper.BindPFlag(server.KeyACMEPort, pflags.Lookup(server.KeyACMEPort))
 
-	pflags.String("repository-handler", "./handlers/repository", "handler script for repository")
-	viper.BindPFlag(repositoryworker.KeyHandlerScriptRepository, pflags.Lookup("repository-handler"))
+	pflags.String(weque.KeyPrefix, "", "prefix for environment variable")
+	viper.BindPFlag(weque.KeyPrefix, pflags.Lookup(weque.KeyPrefix))
 
-	pflags.String("registry-handler", "./handlers/registry", "handler script for registry")
-	viper.BindPFlag(registryworker.KeyHandlerScriptRegistry, pflags.Lookup("registry-handler"))
+	pflags.String(repositoryworker.KeyHandlerScriptRepository, "./handlers/repository", "handler script for repository")
+	viper.BindPFlag(repositoryworker.KeyHandlerScriptRepository, pflags.Lookup(repositoryworker.KeyHandlerScriptRepository))
 
-	pflags.Bool("insecure", false, "handler script for registry")
-	viper.BindPFlag(weque.KeyInsecureMode, pflags.Lookup("insecure"))
+	pflags.String(registryworker.KeyHandlerScriptRegistry, "./handlers/registry", "handler script for registry")
+	viper.BindPFlag(registryworker.KeyHandlerScriptRegistry, pflags.Lookup(registryworker.KeyHandlerScriptRegistry))
+
+	pflags.Bool(weque.KeyInsecureMode, false, "skip steps to verify for development")
+	viper.BindPFlag(weque.KeyInsecureMode, pflags.Lookup(weque.KeyInsecureMode))
 	viper.BindEnv(weque.KeyInsecureMode, "INSECURE")
 }

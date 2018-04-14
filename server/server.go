@@ -49,10 +49,10 @@ func (s *Server) Start() error {
 	registryworker.Notify(registryworker.Run(s.registryEvents))
 
 	var err error
-	if !viper.GetBool(KeyACMEEnabled) {
-		err = ListenAndServe(e)
-	} else {
+	if viper.GetBool(KeyTLSEnabled) {
 		err = ListenAndServeTLS(e)
+	} else {
+		err = ListenAndServe(e)
 	}
 	if err != nil {
 		log.Println(err)

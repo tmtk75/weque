@@ -11,6 +11,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+const KeyTLSEnabled = "tls.enabled"
+
 func init() {
 	viper.SetDefault(KeyACMECacheDir, "certs")
 	viper.SetDefault(KeyACMEHostWhitelist, []string{"test.example.com"})
@@ -23,7 +25,7 @@ type Shutdownable interface {
 type NopShutdownable struct{}
 
 func (e *NopShutdownable) Shutdown(ctx context.Context) error {
-	log.Println("nop shutdownable")
+	log.Println("[debug] nop shutdownable")
 	return nil
 }
 
@@ -33,7 +35,7 @@ func ListenAndServeTLS(h http.Handler) error {
 
 	var challenge Shutdownable = &NopShutdownable{}
 	getCert := GetCertificateLocalhost
-	if !viper.GetBool(KeyACMEEnabled) {
+	if viper.GetBool(KeyACMEEnabled) {
 		challenge, getCert = ConfigureACME(ch)
 	}
 
