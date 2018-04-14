@@ -9,14 +9,6 @@ import (
 	"os/signal"
 
 	"github.com/spf13/viper"
-	"golang.org/x/crypto/acme/autocert"
-)
-
-const (
-	KeyACMEEnabled       = "tls.acme.enabled"
-	KeyACMEChallengePort = "tls.acme.challenge-port"
-	KeyACMEHostWhitelist = "tls.acme.host-whitelist"
-	KeyACMECacheDir      = "tls.acme.cache-dir"
 )
 
 func init() {
@@ -24,41 +16,34 @@ func init() {
 	viper.SetDefault(KeyACMEHostWhitelist, []string{"test.example.com"})
 }
 
+type Shutdownable interface {
+	Shutdown(ctx context.Context) error
+}
+
+type NopShutdownable struct{}
+
+func (e *NopShutdownable) Shutdown(ctx context.Context) error {
+	log.Println("nop shutdownable")
+	return nil
+}
+
 func ListenAndServeTLS(h http.Handler) error {
-	cachedir := viper.GetString(KeyACMECacheDir)
-	log.Printf("%v: %v", KeyACMECacheDir, cachedir)
+	ch := make(chan os.Signal)
+	signal.Notify(ch, os.Interrupt)
 
-	whitelist := viper.GetStringSlice(KeyACMEHostWhitelist)
-	log.Printf("%v: %v", KeyACMEHostWhitelist, whitelist)
-
-	mgr := autocert.Manager{
-		Prompt:     autocert.AcceptTOS,
-		HostPolicy: autocert.HostWhitelist(whitelist...),
-		Cache:      autocert.DirCache(cachedir), // to store certs
+	var challenge Shutdownable = &NopShutdownable{}
+	getCert := GetCertificateLocalhost
+	if !viper.GetBool(KeyACMEEnabled) {
+		challenge, getCert = ConfigureACME(ch)
 	}
 
 	server := &http.Server{
 		Addr:    viper.GetString(KeyTLSPort),
 		Handler: h,
 		TLSConfig: &tls.Config{
-			//GetCertificate: mgr.GetCertificate,
-			GetCertificate: GetCertificate,
+			GetCertificate: getCert,
 		},
 	}
-
-	addr := viper.GetString(KeyACMEChallengePort)
-	challenge := &http.Server{Addr: addr, Handler: mgr.HTTPHandler(nil)}
-
-	ch := make(chan os.Signal)
-	signal.Notify(ch, os.Interrupt)
-	go func() {
-		log.Printf("start listening at %v", addr)
-		err := challenge.ListenAndServe()
-		if err != http.ErrServerClosed {
-			log.Printf("http: %v", err)
-			ch <- os.Interrupt
-		}
-	}()
 
 	go func() {
 		log.Printf("start listening at %v", server.Addr)
@@ -69,16 +54,14 @@ func ListenAndServeTLS(h http.Handler) error {
 		}
 	}()
 
-	select {
-	case _ = <-ch:
-		log.Printf("challenge shutdown: %v", challenge.Shutdown(context.Background()))
-		log.Printf("server shutdown: %v", server.Shutdown(context.Background()))
-	}
+	_ = <-ch
+	log.Printf("challenge shutdown: %v", challenge.Shutdown(context.Background()))
+	log.Printf("tls shutdown: %v", server.Shutdown(context.Background()))
 	return nil
 }
 
 // for testing
-func GetCertificate(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
+func GetCertificateLocalhost(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
 	c, err := tls.X509KeyPair([]byte(certPEMBlock), []byte(keyPEMBlock))
 	if err != nil {
 		return nil, err
@@ -88,7 +71,7 @@ func GetCertificate(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
 
 //go:generate go run $GOROOT/src/crypto/tls/generate_cert.go --rsa-bits 1024 --host 127.0.0.1,::1,localhost --ca --start-date "Jan 1 00:00:00 1970" --duration=1000000h
 
-const certPEMBlock = ` -----BEGIN CERTIFICATE-----
+const certPEMBlock = `-----BEGIN CERTIFICATE-----
 MIICETCCAXqgAwIBAgIQPtOOzqt5KqzFJ+f8uzZ7ijANBgkqhkiG9w0BAQsFADAS
 MRAwDgYDVQQKEwdBY21lIENvMCAXDTcwMDEwMTAwMDAwMFoYDzIwODQwMTI5MTYw
 MDAwWjASMRAwDgYDVQQKEwdBY21lIENvMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCB

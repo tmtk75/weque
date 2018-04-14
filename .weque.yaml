@@ -2,6 +2,7 @@ port: :9981
 
 tls:
   # port: :1443
+  # enabled: false
   acme:
     # enabled: false
     # challenge-port: :80

@@ -52,6 +52,9 @@ func init() {
 	pflags.String("tls.port", ":https", "port in TLS to listen")
 	viper.BindPFlag(server.KeyTLSPort, pflags.Lookup("tls.port"))
 
+	pflags.Bool("acme.enabled", false, "Enable Let's Encrypt")
+	viper.BindPFlag(server.KeyACMEEnabled, pflags.Lookup("acme.enabled"))
+
 	pflags.String("acme.challenge-port", ":http", "port to listen for ACME challenge")
 	viper.BindPFlag(server.KeyACMEChallengePort, pflags.Lookup("acme.challenge-port"))
 
