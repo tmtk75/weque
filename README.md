@@ -1,4 +1,6 @@
 # README
+[![CircleCI](https://circleci.com/gh/tmtk75/weque.svg?style=svg)](https://circleci.com/gh/tmtk75/weque)
+
 Weque is a server to receive webhooks written with modern libraries.
 
 ## Getting Started
