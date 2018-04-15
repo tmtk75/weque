@@ -37,7 +37,7 @@ func TestRun(t *testing.T) {
 
 	out := bytes.NewBufferString("")
 	stdout = out
-	err := Run(env, ".", "./print-env.sh")
+	err := Run(env, ".", "./bin/print-env.sh")
 	assert.Nil(t, err)
 
 	lines := strings.Split(strings.Trim(out.String(), "\n"), "\n")
@@ -53,7 +53,7 @@ func TestRunFailed(t *testing.T) {
 	})
 
 	t.Run("failed-to-run", func(t *testing.T) {
-		err := Run([]string{}, ".", "./fail.sh")
+		err := Run([]string{}, ".", "./bin/fail.sh")
 		assert.Error(t, err)
 		assert.Regexp(t, "^failed to run.*exit status 127", err.Error())
 	})
