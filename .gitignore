@@ -2,6 +2,7 @@
 .*.swp
 vendor/
 credentials
+/.weque.yaml
 
 # bin
 /weque
