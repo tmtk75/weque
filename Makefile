@@ -16,6 +16,10 @@ build: weque  ## Build here
 run:
 	SECRET_TOKEN=abc123 go run ./cmd/weque/main.go serve
 
+.PHONY: run-tls
+run-tls:
+	SECRET_TOKEN=abc123 go run ./cmd/weque/main.go serve --tls.enabled --tls.port=:1443
+
 weque: $(SRCS)
 	go build $(LDFLAGS) -o weque ./cmd/weque
 
