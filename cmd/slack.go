@@ -18,6 +18,7 @@ import (
 	"net/http"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/tmtk75/weque/repository/bitbucket"
 	"github.com/tmtk75/weque/repository/github"
 	"github.com/tmtk75/weque/slack"
@@ -40,6 +41,7 @@ var slackGithubCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		r, _ := http.NewRequest("POST", "http://example.com", nil)
 		r.Header.Add("Content-type", "application/json")
+		r.Header.Add("X-Github-Delivery", "")
 		e := &github.Github{}
 		slack.PrintIncomingWebhookRepository(r, "./github/payload.json", e, e)
 	},
@@ -58,9 +60,23 @@ var slackBitbucketCmd = &cobra.Command{
 	},
 }
 
+var slackRegistryCmd = &cobra.Command{
+	Use:   "registry [flags]",
+	Short: "Print slack payload for docker registry",
+	Args:  cobra.ExactArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+		slack.PrintIncomingWebhookRegistry("./registry/payload.json")
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(slackCmd)
+	pflags := slackCmd.PersistentFlags()
+	pflags.String("channel-name", "#api-test", "Slack channel name")
+	viper.BindPFlag(slack.KeySlackChannelName, pflags.Lookup("channel-name"))
 
+	//
 	slackCmd.AddCommand(slackGithubCmd)
 	slackCmd.AddCommand(slackBitbucketCmd)
+	slackCmd.AddCommand(slackRegistryCmd)
 }

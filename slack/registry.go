@@ -2,9 +2,14 @@ package slack
 
 import (
 	"bytes"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"log"
 	"text/template"
 
 	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 	"github.com/tmtk75/weque/registry"
 )
 
@@ -38,7 +43,7 @@ id:{{ .Event.ID }}
 	}
 	return &IncomingWebhook{
 		Username: "webhook",
-		Channel:  "#api-test",
+		Channel:  viper.GetString(KeySlackChannelName),
 		Text:     titletext,
 		Attachments: []Attachment{
 			{
@@ -49,4 +54,24 @@ id:{{ .Event.ID }}
 			},
 		},
 	}, nil
+}
+
+func PrintIncomingWebhookRegistry(path string) {
+	b, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
+
+	var wh registry.Webhook
+	err = json.Unmarshal(b, &wh)
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
+	iwh, err := NewIncomingWebhookRegistry(&wh.Events[0], nil)
+
+	s, err := json.Marshal(iwh)
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
+	fmt.Printf("%v", string(s))
 }

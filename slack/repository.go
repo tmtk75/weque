@@ -64,7 +64,7 @@ status:$status
 	}
 
 	wh := &IncomingWebhook{
-		Channel:  viper.GetString(KEY_CHANNEL_NAME),
+		Channel:  viper.GetString(KeySlackChannelName),
 		Username: fmt.Sprintf("webhook (%s)", w.Pusher.Name),
 		Text:     titletext,
 		Attachments: []Attachment{

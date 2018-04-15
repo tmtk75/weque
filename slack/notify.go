@@ -14,13 +14,13 @@ import (
 )
 
 const (
-	KEY_SLACK_URL    = "notification.slack.incoming_webhook_url"
-	KEY_CHANNEL_NAME = "notification.slack.channel_name"
+	KeySlackURL         = "notification.slack.incoming_webhook_url"
+	KeySlackChannelName = "notification.slack.channel_name"
 )
 
 func init() {
-	viper.BindEnv(KEY_SLACK_URL, "SLACK_URL")
-	viper.BindEnv(KEY_CHANNEL_NAME, "SLACK_CHANNEL_NAME")
+	viper.BindEnv(KeySlackURL, "SLACK_URL")
+	viper.BindEnv(KeySlackChannelName, "SLACK_CHANNEL_NAME")
 }
 
 func Notify(wh *IncomingWebhook) error {
@@ -42,7 +42,7 @@ func request(wh *IncomingWebhook) error {
 	}
 
 	r := bytes.NewBuffer(b)
-	url := viper.GetString(KEY_SLACK_URL)
+	url := viper.GetString(KeySlackURL)
 	req, err := http.NewRequest("POST", url, r)
 	if err != nil {
 		return errors.Wrapf(err, "failed to build a request for slack notification")
