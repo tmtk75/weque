@@ -34,6 +34,8 @@ var slackCmd = &cobra.Command{
 	},
 }
 
+var slackNotify bool
+
 var slackGithubCmd = &cobra.Command{
 	Use:   "github [flags]",
 	Short: "Print slack payload for GitHub",
@@ -43,7 +45,7 @@ var slackGithubCmd = &cobra.Command{
 		r.Header.Add("Content-type", "application/json")
 		r.Header.Add("X-Github-Delivery", "")
 		e := &github.Github{}
-		slack.PrintIncomingWebhookRepository(r, "./github/payload.json", e, e)
+		slack.PrintIncomingWebhookRepository(r, "./github/payload.json", e, e, slackNotify)
 	},
 }
 
@@ -56,7 +58,7 @@ var slackBitbucketCmd = &cobra.Command{
 		r.Header.Add("X-Event-Key", "a")
 		r.Header.Add("X-Request-UUID", "b")
 		e := &bitbucket.Bitbucket{}
-		slack.PrintIncomingWebhookRepository(r, "./bitbucket/payload.json", e, e)
+		slack.PrintIncomingWebhookRepository(r, "./bitbucket/payload.json", e, e, slackNotify)
 	},
 }
 
@@ -71,9 +73,12 @@ var slackRegistryCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(slackCmd)
+
 	pflags := slackCmd.PersistentFlags()
-	pflags.String("channel-name", "#api-test", "Slack channel name")
+	pflags.String("channel-name", "#api-test", "slack channel name")
 	viper.BindPFlag(slack.KeySlackChannelName, pflags.Lookup("channel-name"))
+
+	slackCmd.PersistentFlags().BoolVar(&slackNotify, "notify", false, "send messsage to slack actually")
 
 	//
 	slackCmd.AddCommand(slackGithubCmd)

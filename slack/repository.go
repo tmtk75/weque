@@ -80,7 +80,7 @@ status:$status
 	return wh, nil
 }
 
-func PrintIncomingWebhookRepository(r *http.Request, path string, h repository.Handler, p repository.WebhookProvider) {
+func PrintIncomingWebhookRepository(r *http.Request, path string, h repository.Handler, p repository.WebhookProvider, notify bool) {
 	b, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Fatalf("%v", err)
@@ -96,5 +96,11 @@ func PrintIncomingWebhookRepository(r *http.Request, path string, h repository.H
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
-	fmt.Printf("%v", string(s))
+	fmt.Printf("%v\n", string(s))
+
+	if notify {
+		if err := Notify(iwh); err != nil {
+			log.Fatalf("%v", err)
+		}
+	}
 }

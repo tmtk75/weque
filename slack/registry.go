@@ -73,5 +73,5 @@ func PrintIncomingWebhookRegistry(path string) {
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
-	fmt.Printf("%v", string(s))
+	fmt.Printf("%v\n", string(s))
 }
