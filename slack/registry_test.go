@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/tmtk75/weque/registry"
 )
@@ -27,7 +28,8 @@ func TestNotifyRegistry(t *testing.T) {
 	}
 
 	//
-	icon := "http://calvintrobinson.s3.amazonaws.com/wp-content/uploads/harbor-logo2.png"
+	viper.Set(KeySlackDockerIconURL, "file:///docker-icon")
+	icon := "file:///docker-icon"
 	expects := []incomingWebHook{
 		{
 			err:      nil,

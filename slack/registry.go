@@ -15,6 +15,7 @@ import (
 
 const (
 	KeySlackPayloadTemplateRegistry = "notification.slack.payload_template_registry"
+	KeySlackDockerIconURL           = "notification.slack.docker_icon_url"
 )
 
 func NewIncomingWebhookRegistry(e *registry.Event, exiterr error) (*IncomingWebhook, error) {
@@ -55,7 +56,7 @@ id:{{ .Event.ID }}
 		Attachments: []Attachment{
 			{
 				AuthorName: e.Target.Repository,
-				AuthorIcon: "http://calvintrobinson.s3.amazonaws.com/wp-content/uploads/harbor-logo2.png",
+				AuthorIcon: viper.GetString(KeySlackDockerIconURL),
 				Color:      color,
 				Text:       text.String(),
 			},
