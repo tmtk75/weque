@@ -54,6 +54,10 @@ dr-req:
 install:  ## Install in GOPATH
 	go install $(LDFLAGS) ./cmd/weque
 
+.PHONY: clean
+clean:  ## Clean
+	rm -f weque
+
 
 .PHONY: registry
 registry:
