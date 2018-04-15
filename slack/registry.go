@@ -64,7 +64,7 @@ id:{{ .Event.ID }}
 	}, nil
 }
 
-func PrintIncomingWebhookRegistry(path string) {
+func PrintIncomingWebhookRegistry(path string, notify bool) {
 	b, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Fatalf("%v", err)
@@ -82,4 +82,10 @@ func PrintIncomingWebhookRegistry(path string) {
 		log.Fatalf("%v", err)
 	}
 	fmt.Printf("%v\n", string(s))
+
+	if notify {
+		if err := Notify(iwh); err != nil {
+			log.Fatalf("%v", err)
+		}
+	}
 }

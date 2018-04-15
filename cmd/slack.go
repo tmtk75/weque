@@ -67,7 +67,7 @@ var slackRegistryCmd = &cobra.Command{
 	Short: "Print slack payload for docker registry",
 	Args:  cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		slack.PrintIncomingWebhookRegistry("./registry/payload.json")
+		slack.PrintIncomingWebhookRegistry("./registry/payload.json", slackNotify)
 	},
 }
 
