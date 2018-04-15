@@ -41,23 +41,23 @@ func init() {
 	RootCmd.AddCommand(githubCmd)
 
 	// github list
-	githubCmd.AddCommand(listCmd)
+	githubCmd.AddCommand(githubListCmd)
 
 	// github create
-	githubCmd.AddCommand(createCmd)
-	createCmd.PersistentFlags().String("name", "web", "webhook name")
+	githubCmd.AddCommand(githubCreateCmd)
+	githubCreateCmd.PersistentFlags().String("name", "web", "webhook name")
 
 	// github tf
-	githubCmd.AddCommand(tfCmd)
+	githubCmd.AddCommand(githubTfCmd)
 
 	// github tfgen
-	githubCmd.AddCommand(tfgenCmd)
-	pflags := tfgenCmd.PersistentFlags()
+	githubCmd.AddCommand(githubTfgenCmd)
+	pflags := githubTfgenCmd.PersistentFlags()
 	pflags.StringP("content-type", "c", "application/json", "content-type")
-	viper.BindPFlag("content_type", tfgenCmd.PersistentFlags().Lookup("content-type"))
+	viper.BindPFlag("content_type", githubTfgenCmd.PersistentFlags().Lookup("content-type"))
 }
 
-var listCmd = &cobra.Command{
+var githubListCmd = &cobra.Command{
 	Use: "list <onwer/repo>",
 	Long: `To give your token,
 
@@ -68,7 +68,7 @@ var listCmd = &cobra.Command{
 	},
 }
 
-var createCmd = &cobra.Command{
+var githubCreateCmd = &cobra.Command{
 	Use:  "create <repo> <url> <secret>",
 	Long: `Create a new webhook in the github repository.`,
 	Args: cobra.RangeArgs(3, 4), // REPO URL SECRET
@@ -86,7 +86,7 @@ var createCmd = &cobra.Command{
 	},
 }
 
-var tfCmd = &cobra.Command{
+var githubTfCmd = &cobra.Command{
 	Use: "tf",
 	Run: func(cmd *cobra.Command, args []string) {
 		a, _ := ioutil.ReadAll(os.Stdin)
@@ -99,7 +99,7 @@ var tfCmd = &cobra.Command{
 	},
 }
 
-var tfgenCmd = &cobra.Command{
+var githubTfgenCmd = &cobra.Command{
 	Use:  "tfgen",
 	Args: cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
