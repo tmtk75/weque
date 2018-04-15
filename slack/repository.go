@@ -14,6 +14,10 @@ import (
 	"github.com/tmtk75/weque/repository"
 )
 
+const (
+	KeySlackPayloadTemplateRepository = "notification.slack.payload_template_repository"
+)
+
 func NewIncomingWebhookRepository(w *repository.Webhook, u repository.WebhookProvider, exiterr error) (*IncomingWebhook, error) {
 	templ := `
 delivery:<{{ .RepositoryURL }}/settings/hooks|{{ .Delivery }}>
@@ -23,6 +27,9 @@ compare:<{{ .CompareURL }}|{{ .BeforeShort }}...{{ .AfterShort }}>
 pusher:<{{ .PusherURL }}|{{ .Pusher.Name }}>
 status:$status
 `
+	if s := viper.GetString(KeySlackPayloadTemplateRepository); s != "" {
+		templ = s
+	}
 
 	if len(w.Before) < 7 {
 		return nil, errors.New("Before is less than 7")

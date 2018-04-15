@@ -28,3 +28,8 @@ notification:
     bitbucket_icon_url: "https://www.iconfinder.com/icons/1826176/download/png/256"
     github_icon_url: "https://www.iconfinder.com/icons/298822/download/png/256" # http://cdn.flaticon.com/png/256/25231.png
 
+    # payload_template_repository: |
+    #  hi, there! a repository seems changed.
+
+    # payload_template_registry: |
+    #  hi, there! an image seems changed.

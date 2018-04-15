@@ -13,6 +13,10 @@ import (
 	"github.com/tmtk75/weque/registry"
 )
 
+const (
+	KeySlackPayloadTemplateRegistry = "notification.slack.payload_template_registry"
+)
+
 func NewIncomingWebhookRegistry(e *registry.Event, exiterr error) (*IncomingWebhook, error) {
 	templ := `
 repository:{{ .Event.Target.Repository }}
@@ -21,6 +25,9 @@ digest:{{ .Event.Target.Digest }}
 url:{{ .Event.Target.URL }}
 id:{{ .Event.ID }}
 `
+	if s := viper.GetString(KeySlackPayloadTemplateRegistry); s != "" {
+		templ = s
+	}
 
 	t := template.Must(template.New("").Parse(templ))
 	text := bytes.NewBufferString("")
