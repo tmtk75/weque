@@ -10,6 +10,10 @@ import (
 	"github.com/tmtk75/weque/repository"
 )
 
+const (
+	KeySlackBitbucketIconURL = "notification.slack.bitbucket_icon_url"
+)
+
 type Bitbucket struct {
 }
 
@@ -94,8 +98,7 @@ func (s *Bitbucket) Name() string {
 }
 
 func (s *Bitbucket) IconURL() string {
-	//FIXME
-	return "https://www.atlassian.com/dam/jcr:e2a6f06f-b3d5-4002-aed3-73539c56a2eb/Bitbucket@2x-blue.png"
+	return viper.GetString(KeySlackBitbucketIconURL)
 }
 
 func (s *Bitbucket) RepositoryURL(w *repository.Webhook) string {

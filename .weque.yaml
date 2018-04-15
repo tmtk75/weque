@@ -24,3 +24,7 @@ notification:
     # https://api.slack.com/incoming-webhooks
     incoming_webhook_url:  # export SLACK_URL
     channel_name: "#api-test"
+
+    bitbucket_icon_url: "https://www.iconfinder.com/icons/1826176/download/png/256"
+    github_icon_url: "https://www.iconfinder.com/icons/298822/download/png/256"
+

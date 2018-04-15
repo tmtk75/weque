@@ -18,6 +18,10 @@ import (
 	"github.com/tmtk75/weque/repository"
 )
 
+const (
+	KeySlackGithubIconURL = "notification.slack.github_icon_url"
+)
+
 type Github struct {
 }
 
@@ -96,8 +100,7 @@ func (s *Github) Name() string {
 }
 
 func (s *Github) IconURL() string {
-	// FIXME
-	return "http://cdn.flaticon.com/png/256/25231.png"
+	return viper.GetString(KeySlackGithubIconURL)
 }
 
 func (s *Github) RepositoryURL(w *repository.Webhook) string {
