@@ -15,13 +15,10 @@
 package cmd
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"log"
+	"net/http"
 
 	"github.com/spf13/cobra"
-	"github.com/tmtk75/weque/repository"
+	"github.com/tmtk75/weque/repository/bitbucket"
 	"github.com/tmtk75/weque/repository/github"
 	"github.com/tmtk75/weque/slack"
 )
@@ -38,26 +35,26 @@ var slackCmd = &cobra.Command{
 
 var slackGithubCmd = &cobra.Command{
 	Use:   "github [flags]",
-	Short: "Print or send notification payload for testing",
+	Short: "Print slack payload for GitHub",
 	Args:  cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		b, err := ioutil.ReadFile("./github/payload.json")
-		if err != nil {
-			log.Fatalf("%v", err)
-		}
-		//fmt.Printf("%v", string(b))
-		var wh repository.Webhook
-		err = json.Unmarshal(b, &wh)
-		if err != nil {
-			log.Fatalf("%v", err)
-		}
-		iwh, err := slack.NewIncomingWebhookRepository(&wh, &github.Github{}, nil)
+		r, _ := http.NewRequest("POST", "http://example.com", nil)
+		r.Header.Add("Content-type", "application/json")
+		e := &github.Github{}
+		slack.PrintIncomingWebhookRepository(r, "./github/payload.json", e, e)
+	},
+}
 
-		s, err := json.Marshal(iwh)
-		if err != nil {
-			log.Fatalf("%v", err)
-		}
-		fmt.Printf("%v", string(s))
+var slackBitbucketCmd = &cobra.Command{
+	Use:   "bitbucket [flags]",
+	Short: "Print slack payload for Bitbucket",
+	Args:  cobra.ExactArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+		r, _ := http.NewRequest("POST", "http://example.com", nil)
+		r.Header.Add("X-Event-Key", "a")
+		r.Header.Add("X-Request-UUID", "b")
+		e := &bitbucket.Bitbucket{}
+		slack.PrintIncomingWebhookRepository(r, "./bitbucket/payload.json", e, e)
 	},
 }
 
@@ -65,4 +62,5 @@ func init() {
 	RootCmd.AddCommand(slackCmd)
 
 	slackCmd.AddCommand(slackGithubCmd)
+	slackCmd.AddCommand(slackBitbucketCmd)
 }

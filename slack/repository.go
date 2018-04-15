@@ -2,7 +2,11 @@ package slack
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
 	"text/template"
 
 	"github.com/pkg/errors"
@@ -74,4 +78,23 @@ status:$status
 	}
 
 	return wh, nil
+}
+
+func PrintIncomingWebhookRepository(r *http.Request, path string, h repository.Handler, p repository.WebhookProvider) {
+	b, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
+
+	wh, err := h.Unmarshal(r, b)
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
+	iwh, err := NewIncomingWebhookRepository(wh, p, nil)
+
+	s, err := json.Marshal(iwh)
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
+	fmt.Printf("%v", string(s))
 }
