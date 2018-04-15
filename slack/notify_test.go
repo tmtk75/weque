@@ -87,9 +87,12 @@ func TestNotify(t *testing.T) {
 		}
 	}
 
+	viper.Set(gh.KeySlackGithubIconURL, "file:///github-icon-url")
+	viper.Set(bb.KeySlackBitbucketIconURL, "file:///bitbucket-icon-url")
+
 	// GitHub
 	t.Run("github", func(t *testing.T) {
-		icon := "http://cdn.flaticon.com/png/256/25231.png"
+		icon := "file:///github-icon-url"
 		expects := []incomingWebHook{
 			{
 				err:      nil,
@@ -107,7 +110,7 @@ func TestNotify(t *testing.T) {
 
 	// Bitbucket
 	t.Run("bitbucket", func(t *testing.T) {
-		icon := "https://www.atlassian.com/dam/jcr:e2a6f06f-b3d5-4002-aed3-73539c56a2eb/Bitbucket@2x-blue.png"
+		icon := "file:///bitbucket-icon-url"
 		expects := []incomingWebHook{
 			{
 				err:      nil,
