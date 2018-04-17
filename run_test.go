@@ -36,7 +36,7 @@ func TestRun(t *testing.T) {
 	}
 
 	out := bytes.NewBufferString("")
-	stdout = out
+	Stdout = out
 	err := Run(env, ".", "./bin/print-env.sh")
 	assert.Nil(t, err)
 

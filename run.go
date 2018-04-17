@@ -10,7 +10,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-var stdout io.Writer = nil // for test
+var Stdout io.Writer = nil // for test
+var Stderr io.Writer = nil // for test
 
 func Run(env []string, wd, s string, args ...string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -20,7 +21,8 @@ func Run(env []string, wd, s string, args ...string) error {
 	cmd.Dir = wd
 	cmd.Env = env
 
-	cmd.Stdout = stdout
+	cmd.Stdout = Stdout
+	cmd.Stderr = Stderr
 	//errbuf := bytes.NewBuffer([]byte{})  // https://github.com/golang/go/issues/23019
 	//cmd.Stderr = bufio.NewWriter(errbuf)
 
