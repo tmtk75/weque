@@ -12,7 +12,7 @@ traefik
 *.out
 *.log
 acme.json
-./data
+/build/
 
 *.txt
 *.json

@@ -78,6 +78,20 @@ cert.pem key.pem:
 tcpflow:
 	tcpflow -i lo0 -C 'port 3000'
 
+.PHONY: build-release archive
+build-release: build/weque_linux_amd64
+archive: build/weque_linux_amd64.gz
+release: upload-archives
+
+upload-archives: build/weque_linux_amd64.gz
+	echo ghr -u tmtk75 $(VERSION) ./build
+
+build/weque_linux_amd64.gz: build-release
+	gzip -f -k build/weque_linux_amd64
+
+build/weque_linux_amd64:
+	GOARCH=amd64 GOOS=linux  go build -o build/weque_linux_amd64 ./cmd/weque/main.go
+
 .PHONY: help
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
