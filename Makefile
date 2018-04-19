@@ -13,7 +13,9 @@ SRCS := $(shell find . -type f -name '*.go')
 build: weque  ## Build here
 
 .PHONY: generate
-generate:
+generate: github/payload.go
+
+github/payload.go: github/payload.json
 	go generate ./...
 
 
@@ -102,8 +104,8 @@ upload-archives: build/weque_linux_amd64.gz
 build/weque_linux_amd64.gz: build-release
 	gzip -f -k build/weque_linux_amd64
 
-build/weque_linux_amd64:
-	GOARCH=amd64 GOOS=linux  go build -o build/weque_linux_amd64 ./cmd/weque/main.go
+build/weque_linux_amd64: generate
+	GOARCH=amd64 GOOS=linux go build -o build/weque_linux_amd64 ./cmd/weque/main.go
 
 .PHONY: help
 help:
