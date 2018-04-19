@@ -4,6 +4,9 @@ vendor/
 credentials
 /.weque.yaml
 
+# generate
+/github/payload.go
+
 # bin
 /weque
 traefik

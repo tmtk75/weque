@@ -9,8 +9,13 @@ LDFLAGS := -ldflags "-X $(VAR_VERSION)=$(VERSION) \
 
 SRCS := $(shell find . -type f -name '*.go')
 
-.PHONY: build
+.PHONY: build generate
 build: weque  ## Build here
+
+.PHONY: generate
+generate:
+	go generate ./...
+
 
 .PHONY: run
 run:
@@ -20,7 +25,7 @@ run:
 run-tls:
 	SECRET_TOKEN=abc123 go run ./cmd/weque/main.go serve --tls.enabled --tls.port=:1443
 
-weque: $(SRCS)
+weque: $(SRCS) generate
 	go build $(LDFLAGS) -o weque ./cmd/weque
 
 gh-req:
@@ -78,6 +83,14 @@ cert.pem key.pem:
 tcpflow:
 	tcpflow -i lo0 -C 'port 3000'
 
+.PHONY: go-assets-builder
+go-assets-builder:
+ifeq ($(shell command -v go-assets-builder 2> /dev/null),)
+	go get github.com/jessevdk/go-assets-builder
+endif
+
+
+## Release targets
 .PHONY: build-release archive
 build-release: build/weque_linux_amd64
 archive: build/weque_linux_amd64.gz

@@ -21,6 +21,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/tmtk75/weque"
+	gh "github.com/tmtk75/weque/github"
 	"github.com/tmtk75/weque/repository/github"
 )
 
@@ -33,6 +34,8 @@ var runCmd = &cobra.Command{
 	},
 }
 
+//go:generate go-assets-builder -p github -o ../github/payload.go ../github/payload.json
+
 var runGithubCmd = &cobra.Command{
 	Use:   "github [flags] <command> [args...]",
 	Args:  cobra.MinimumNArgs(1),
@@ -42,7 +45,9 @@ var runGithubCmd = &cobra.Command{
 		r.Header.Add("Content-type", "application/json")
 		r.Header.Add("X-Github-Delivery", "delivery-id")
 		e := &github.Github{}
-		b, _ := ioutil.ReadFile("./github/payload.json")
+
+		a, _ := gh.Assets.Open("/github/payload.json")
+		b, _ := ioutil.ReadAll(a)
 		wh, _ := e.Unmarshal(r, b)
 		weque.Stdout = os.Stdout
 		weque.Stderr = os.Stderr
