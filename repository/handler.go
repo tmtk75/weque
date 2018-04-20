@@ -60,7 +60,7 @@ func NewHandler(h Handler, events chan<- *Context) http.HandlerFunc {
 
 		if !viper.GetBool(KeyInsecureMode) {
 			if err := h.Verify(r, b); err != nil {
-				log.Printf("failed to verify for %v: %v", rid, Shorten(string(b), weque.ShortenMax))
+				log.Printf("failed to verify for %v: %v", rid, Shorten(string(b), 32))
 				weque.SendError(w, 401, fmt.Sprintf("failed to verify: %v", err))
 				return
 			}
