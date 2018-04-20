@@ -95,7 +95,7 @@ func TestDispatcherUnknown(t *testing.T) {
 func TestDispatcherPing(t *testing.T) {
 	viper.Set(repository.KeyInsecureMode, true)
 
-	rb := bytes.NewBufferString(`{"After": "a"}`)
+	rb := bytes.NewBufferString(`{}`)
 	req := httptest.NewRequest("POST", "https://example.com", rb)
 	req.Header.Add("content-type", "application/json")
 	req.Header.Add("x-github-event", "ping")

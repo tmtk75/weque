@@ -34,6 +34,11 @@ func NewDispatcher(github, bitbucket http.HandlerFunc) http.HandlerFunc {
 			r.Body = ioutil.NopCloser(bytes.NewBuffer(b))
 			github(w, r)
 			return
+		} else if r.Header.Get("x-github-event") == "ping" {
+			log.Printf("[info] was able to parse as github ping")
+			r.Body = ioutil.NopCloser(bytes.NewBuffer(b))
+			github(w, r)
+			return
 		} else {
 			log.Printf("missing After. It seems not valid body thought parsed. %v", wh)
 		}
