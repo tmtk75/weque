@@ -28,30 +28,42 @@ go get -u github.com/tmtk75/weque
 
 
 ## Getting Started
-* ngrok
+Prerequisites
+* [ngrok](https://ngrok.com/)
+
+```
+export GITHUB_TOKEN=<your github personal access token>
+```
+Take it here, <https://github.com/settings/tokens>
 
 ### Preparing
 ```
-$ ngrok http 3000
+$ ngrok http 9981
 ...
+Forwarding                    https://df431fc9.ngrok.io -> localhost:9981
+...
+```
+ngrok shows a URL for https and memorize it.
 
+Then start a weque process.
+```
 SECRET_TOKEN=abc123 go run ./cmd/weque/main.go server
 ...
 ```
-TBD
 
-### Create and list
+It's ready to receive webhooks.
+
+### Create a webhook setting and receive ping
 ```
 $ weque github create \
         tmtk75/weque \
-        https://3def21d4.ngrok.io/github \
+        https://df431fc9.ngrok.io \
 	abc123
 ```
-TBD
+Repalce `tmtk75/weque` with a repository you have.
 
-
-### Receive
-
+You will see some logs appear for receiving a ping just after
+you create a webhook if webhook is created properly.
 
 
 ## Debug
