@@ -4,13 +4,27 @@
 Weque is a tool to handle webhooks and notifications.
 It's a replacement of [hoko](https://github.com/tmtk75/hoko).
 
+
+## Features
 Weque supports next functions.
-* Trigger processe when receiving webhooks of [GitHub](https://developer.github.com/webhooks/) and [Bitbucket](https://confluence.atlassian.com/bitbucket/manage-webhooks-735643732.html).
-* Kick process when receiving [notifications of docker registry](https://docs.docker.com/registry/notifications/).
+* Trigger processe with some environment variables
+  when receiving webhooks of [GitHub](https://developer.github.com/webhooks/)
+  and [Bitbucket](https://confluence.atlassian.com/bitbucket/manage-webhooks-735643732.html).
+* Kick process with some environmet variables when receiving [notifications of docker registry](https://docs.docker.com/registry/notifications/).
 * TLS communication
   - with cert and key files.
   - via ACME ([Let's Encrypt](https://letsencrypt.org/)).
-* Notification to slack
+* Notification to slack with rich attachment.
+* Helper commands to develop.
+  - Maintain webhook settings of GitHub and Bitbucket.
+  - Run handler scripts with payload without receiving webhooks actually.
+  - Send notification to slack manually.
+
+
+## Installation
+```
+go get -u github.com/tmtk75/weque
+```
 
 
 ## Getting Started
