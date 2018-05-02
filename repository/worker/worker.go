@@ -48,12 +48,12 @@ func Notify(ch <-chan *Context) <-chan error {
 		for e := range ch {
 			inwh, err := slack.NewIncomingWebhookRepository(e.Context.Webhook, e.Context.WebhookProvider, e.Err)
 			if err != nil {
-				log.Printf("[error] failed to build incoming webhook: %v", err)
+				//log.Printf("[error] failed to build incoming webhook: %v", err)
 				out <- err
 				continue
 			}
 			if err := notifier(inwh); err != nil {
-				log.Printf("[error] failed to notify: %v", err)
+				//log.Printf("[error] failed to notify: %v", err)
 				out <- err
 				continue
 			}

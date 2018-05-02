@@ -46,11 +46,13 @@ func Notify(ch <-chan *Event) <-chan error {
 		for e := range ch {
 			inwh, err := slack.NewIncomingWebhookRegistry(e.Event, e.Err)
 			if err != nil {
-				log.Printf("[error] %v", err)
+				//log.Printf("[error] %v", err)
+				out <- err
 				continue
 			}
 			if err := notifier(inwh); err != nil {
-				log.Printf("[error] %v", err)
+				//log.Printf("[error] %v", err)
+				out <- err
 				continue
 			}
 			log.Printf("notified: %v", e.Event)
