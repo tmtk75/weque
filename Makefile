@@ -99,7 +99,7 @@ archive: build/weque_linux_amd64.gz
 release: upload-archives
 
 upload-archives: build/weque_linux_amd64.gz
-	echo ghr -u tmtk75 $(VERSION) ./build
+	ghr -u tmtk75 $(VERSION) ./build/*.gz
 
 build/weque_linux_amd64.gz: build-release
 	gzip -f -k build/weque_linux_amd64
