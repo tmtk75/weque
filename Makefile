@@ -98,11 +98,11 @@ build-release: build/weque_linux_amd64
 archive: build/weque_linux_amd64.gz
 release: upload-archives
 
-upload-archives: build/weque_linux_amd64.gz
-	ghr -u tmtk75 $(VERSION) ./build/*.gz
+upload-archives: build/weque_linux_amd64.zip
+	ghr -u tmtk75 $(VERSION) ./build/*.zip
 
-build/weque_linux_amd64.gz: build-release
-	gzip -f -k build/weque_linux_amd64
+build/weque_linux_amd64.zip: build-release
+	(cd build; zip weque_linux_amd64.zip weque_linux_amd64)
 
 build/weque_linux_amd64: generate
 	GOARCH=amd64 GOOS=linux go build -o build/weque_linux_amd64 ./cmd/weque/main.go
