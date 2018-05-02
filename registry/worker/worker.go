@@ -53,8 +53,10 @@ func Notify(ch <-chan *Event) <-chan error {
 				log.Printf("[error] %v", err)
 				continue
 			}
+			log.Printf("notified: %v", e.Event)
 			out <- nil
 		}
+		close(out)
 		log.Printf("registry worker to notify stopped")
 	}()
 	log.Printf("registry worker to notify started")

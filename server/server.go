@@ -45,8 +45,8 @@ func (s *Server) Start() error {
 	e.POST("/repository/github", Wrap(e, github))
 	e.POST("/repository/bitbucket", Wrap(e, bitbucket))
 
-	repositoryworker.Notify(repositoryworker.Run(s.repositoryEvents))
-	registryworker.Notify(registryworker.Run(s.registryEvents))
+	go printError(repositoryworker.Notify(repositoryworker.Run(s.repositoryEvents)))
+	go printError(registryworker.Notify(registryworker.Run(s.registryEvents)))
 
 	//log.Printf("insecure: %v", viper.GetBool(KeyInsecure))
 
@@ -62,6 +62,14 @@ func (s *Server) Start() error {
 	}
 
 	return nil
+}
+
+func printError(ch <-chan error) {
+	for err := range ch {
+		if err != nil {
+			log.Printf("[error] %v", err)
+		}
+	}
 }
 
 func Wrap(e *echo.Echo, h http.HandlerFunc) func(echo.Context) error {

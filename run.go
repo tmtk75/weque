@@ -26,7 +26,7 @@ func Run(env []string, wd, s string, args ...string) error {
 	//errbuf := bytes.NewBuffer([]byte{})  // https://github.com/golang/go/issues/23019
 	//cmd.Stderr = bufio.NewWriter(errbuf)
 
-	log.Printf("start: %v %v in %v", s, args, wd)
+	log.Printf("run: %v %v in %v", s, args, wd)
 	now := time.Now()
 	err := cmd.Run()
 

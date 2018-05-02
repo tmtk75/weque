@@ -64,10 +64,10 @@ func NewHandler(h Handler, events chan<- *Context) http.HandlerFunc {
 				weque.SendError(w, 401, fmt.Sprintf("failed to verify: %v", err))
 				return
 			}
+			log.Printf("[debug] verified %v", rid)
 		} else {
 			log.Printf("skip to verify because of insecure mode")
 		}
-		log.Printf("[debug] verified %v", rid)
 
 		if h.IsPing(r, b) {
 			log.Printf("request is ping: %v", rid)
