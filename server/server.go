@@ -44,6 +44,9 @@ func (s *Server) Start() error {
 	e.POST("/repository", Wrap(e, regh))
 	e.POST("/repository/github", Wrap(e, github))
 	e.POST("/repository/bitbucket", Wrap(e, bitbucket))
+	// Deprecated. To be compatible with https://github.com/tmtk75/hoko
+	e.POST("/serf/event/github", Wrap(e, github))
+	e.POST("/serf/event/bitbucket", Wrap(e, bitbucket))
 
 	go printError(repositoryworker.Notify(repositoryworker.Run(s.repositoryEvents)))
 	go printError(registryworker.Notify(registryworker.Run(s.registryEvents)))
