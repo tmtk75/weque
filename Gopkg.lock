@@ -45,6 +45,12 @@
   version = "v1.0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/jessevdk/go-assets"
+  packages = ["."]
+  revision = "4f4301a06e153ff90e17793577ab6bf79f8dc5c5"
+
+[[projects]]
   name = "github.com/labstack/echo"
   packages = ["."]
   revision = "a5d81b8d4a627f3f49dcb3164ef2bb5239682227"
@@ -195,6 +201,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "83fbc8f902c62acaf802c6da0a041f63faffe80b1087548e637a044bbfaaca06"
+  inputs-digest = "b0bd9fb467565a177c913060716e5ee745268da4bd8076759c2e819f920e0af6"
   solver-name = "gps-cdcl"
   solver-version = 1

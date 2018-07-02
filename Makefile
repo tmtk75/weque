@@ -69,6 +69,9 @@ install:  ## Install in GOPATH
 clean:  ## Clean
 	rm -f weque
 
+distclean: clean
+	rm -rf build vendor
+
 
 .PHONY: registry
 registry:
