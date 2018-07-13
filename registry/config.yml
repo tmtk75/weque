@@ -21,9 +21,9 @@ notifications:
   endpoints:
     - name: test
       disabled: false
-      url: https://a935e068.ngrok.io/registry
+      url: https://5d5e34be.ngrok.io/registry
       headers:
-        x-test: [abc123]
+        x-weque-secret: [abc123]
       timeout: 30s
       threshold: 5
       backoff: 3s
