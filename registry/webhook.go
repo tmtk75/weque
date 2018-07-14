@@ -95,6 +95,8 @@ func (e *Event) Env() []string {
 	f := func(a string, b interface{}) string { return fmt.Sprintf("%s%s=%v", prefix, a, b) }
 	return []string{
 		f("EVENT_ID", e.ID),
+		f("TIMESTAMP", e.Timestamp),
+		f("ACTION", e.Action),
 		f("REPOSITORY", e.Target.Repository),
 		f("DIGEST", e.Target.Digest),
 		f("URL", e.Target.URL),
@@ -102,6 +104,8 @@ func (e *Event) Env() []string {
 		f("REQUEST_ID", e.Request.ID),
 		f("ADDR", e.Request.Addr),
 		f("HOST", e.Request.Host),
+		f("METHOD", e.Request.Method),
 		f("USER_AGENT", e.Request.UserAgent),
+		f("ACTOR_NAME", e.Actor.Name),
 	}
 }
