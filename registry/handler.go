@@ -61,6 +61,10 @@ func NewHandler(events chan<- *Webhook) http.HandlerFunc {
 		e := wh.Events[0]
 
 		go (func() {
+			if e.Action != "push" {
+				log.Printf("ignored action. id: %v, action: %v", e.ID, e.Action)
+				return
+			}
 			events <- wh
 			log.Printf("queued. id: %v", e.ID)
 		})()
