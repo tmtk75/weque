@@ -9,12 +9,18 @@ import (
 )
 
 type Event struct {
-	ID      string  `json:"id"`
-	Target  Target  `json:"target"`
-	Request Request `json:"request"`
+	ID        string  `json:"id"`
+	Timestamp string  `json:"timestamp"`
+	Action    string  `json:"action"`
+	Target    Target  `json:"target"`
+	Request   Request `json:"request"`
+	Actor     Actor   `json:"actor"`
 }
 
 type Target struct {
+	MediaType  string `json:"mediaType"`
+	Size       int    `json:"size"`
+	Length     int    `json:"length"`
 	Repository string `json:"repository"`
 	Digest     string `json:"digest"`
 	URL        string `json:"url"`
@@ -25,7 +31,17 @@ type Request struct {
 	ID        string `json:"id"`
 	Addr      string `json:"addr"`
 	Host      string `json:"host"`
+	Method    string `json:"method"`
 	UserAgent string `json:"useragent"`
+}
+
+type Actor struct {
+	Name string `json:"name"`
+}
+
+type Source struct {
+	Addr       string `json:"addr"`
+	InstanceID string `json:"instanceID"`
 }
 
 /*

@@ -36,6 +36,11 @@ func NewHandler(events chan<- *Webhook) http.HandlerFunc {
 			log.Printf("failed to unmarshal: %v", err)
 			return
 		}
+		//payload, err := json.Marshal(wh)
+		//if err != nil {
+		//	log.Printf("failed to marshal for debug log: %v", err) // continue to process because just debug log
+		//}
+		//log.Printf("payload: %v", string(payload))
 
 		if len(wh.Events) != 1 {
 			if len(wh.Events) == 0 {
