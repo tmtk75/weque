@@ -9,8 +9,15 @@ type IncomingWebhook struct {
 }
 
 type Attachment struct {
-	AuthorName string `json:"author_name"` // e.g) github
-	AuthorIcon string `json:"author_icon"` // e.g) "http://cdn.flaticon.com/png/256/25231.png"
-	Color      string `json:"color"`       // e.g) good, warn, danger, #00ff00
-	Text       string `json:"text"`
+	AuthorName string  `json:"author_name"` // e.g) github
+	AuthorIcon string  `json:"author_icon"` // e.g) "http://cdn.flaticon.com/png/256/25231.png"
+	Color      string  `json:"color"`       // e.g) good, warn, danger, #00ff00
+	Text       string  `json:"text"`
+	Fields     []Field `json:"fields"`
+}
+
+type Field struct {
+	Title string `json:"title"`
+	Value string `json:"value"`
+	Short bool   `json:"short"`
 }
