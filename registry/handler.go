@@ -30,12 +30,14 @@ func NewHandler(events chan<- *Webhook) http.HandlerFunc {
 			log.Printf("failed to read: %v", err)
 			return
 		}
+		//log.Printf("payload: %v", string(b))
 
 		wh, err := Unmarshal(b)
 		if err != nil {
 			log.Printf("failed to unmarshal: %v", err)
 			return
 		}
+
 		//payload, err := json.Marshal(wh)
 		//if err != nil {
 		//	log.Printf("failed to marshal for debug log: %v", err) // continue to process because just debug log
@@ -59,10 +61,11 @@ func NewHandler(events chan<- *Webhook) http.HandlerFunc {
 		}
 
 		e := wh.Events[0]
+		log.Printf("repository: %v, tag: %v, media-type: %v, action: %v", e.Target.Repository, e.Target.Tag, e.Target.MediaType, e.Action)
 
 		go (func() {
-			if e.Action != "push" {
-				log.Printf("ignored action. id: %v, action: %v", e.ID, e.Action)
+			if !(e.Action == "push" && e.Target.MediaType == "application/vnd.docker.distribution.manifest.v2+json") {
+				log.Printf("ignored action. id: %v, media-type: %v, action: %v", e.ID, e.Target.MediaType, e.Action)
 				return
 			}
 			events <- wh
