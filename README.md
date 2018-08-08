@@ -54,8 +54,9 @@ SECRET_TOKEN=abc123 go run ./cmd/weque/main.go server
 It's ready to receive webhooks.
 
 ### Create a webhook setting and receive ping
+Replace `tmtk75/weque` with a repository of yours.
 ```
-$ weque github create \
+$ go run ./cmd/weque/main.go github create \
         tmtk75/weque \
         https://df431fc9.ngrok.io \
 	abc123
@@ -64,6 +65,12 @@ Repalce `tmtk75/weque` with a repository you have.
 
 You will see some logs appear for receiving a ping just after
 you create a webhook if webhook is created properly.
+
+```
+$ go run ./cmd/weque/main.go github list tmtk75/weque
+[{"type":"Repsitory","id":26495951,"name":"web","active":true,...
+```
+You can also see the webhook you created with `github list` command.
 
 
 ## Debug
