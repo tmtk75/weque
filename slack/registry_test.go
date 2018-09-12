@@ -35,13 +35,13 @@ func TestNotifyRegistry(t *testing.T) {
 			err:      nil,
 			username: "webhook", channel: "#api-test", text: "ok",
 			authorIcon: icon, authorName: "alpine", color: "good",
-			attachmentText: "repository:alpine\ntag:3.6",
+			attachmentText: "alpine:3.6 was pushed by .* from",
 		},
 		{
 			err:      errors.Errorf("failed to run for github"),
 			username: "webhook", channel: "#api-test", text: "failed to run for github",
 			authorIcon: icon, authorName: "alpine", color: "danger",
-			attachmentText: "repository:alpine\ntag:3.6",
+			attachmentText: "alpine:3.6 was pushed by .* from",
 		},
 	}
 
