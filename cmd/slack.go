@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/tmtk75/weque/repository/bitbucket"
 	"github.com/tmtk75/weque/repository/github"
+	"github.com/tmtk75/weque/repository/gitlab"
 	"github.com/tmtk75/weque/slack"
 )
 
@@ -62,6 +63,18 @@ var slackBitbucketCmd = &cobra.Command{
 	},
 }
 
+var slackGitlabCmd = &cobra.Command{
+	Use:   "gitlab [flags]",
+	Short: "Print slack payload for GitLab",
+	Args:  cobra.ExactArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+		r, _ := http.NewRequest("POST", "http://example.com", nil)
+		r.Header.Add("X-Gitlab-Event", "a")
+		e := &gitlab.Gitlab{}
+		slack.PrintIncomingWebhookRepository(r, "./gitlab/payload.json", e, e, slackNotify)
+	},
+}
+
 var slackRegistryCmd = &cobra.Command{
 	Use:   "registry [flags]",
 	Short: "Print slack payload for docker registry",
@@ -83,5 +96,6 @@ func init() {
 	//
 	slackCmd.AddCommand(slackGithubCmd)
 	slackCmd.AddCommand(slackBitbucketCmd)
+	slackCmd.AddCommand(slackGitlabCmd)
 	slackCmd.AddCommand(slackRegistryCmd)
 }
