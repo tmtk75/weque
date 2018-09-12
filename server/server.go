@@ -12,6 +12,7 @@ import (
 	"github.com/tmtk75/weque/repository"
 	bb "github.com/tmtk75/weque/repository/bitbucket"
 	gh "github.com/tmtk75/weque/repository/github"
+	gl "github.com/tmtk75/weque/repository/gitlab"
 	"github.com/tmtk75/weque/repository/worker"
 )
 
@@ -36,6 +37,7 @@ func (s *Server) Start() error {
 	var (
 		github    = repository.NewHandler(&gh.Github{}, s.repositoryEvents)
 		bitbucket = repository.NewHandler(&bb.Bitbucket{}, s.repositoryEvents)
+		gitlab    = repository.NewHandler(&gl.Gitlab{}, s.repositoryEvents)
 		regh      = NewDispatcher(github, bitbucket)
 	)
 	e := echo.New()
@@ -44,6 +46,7 @@ func (s *Server) Start() error {
 	e.POST("/repository", Wrap(e, regh))
 	e.POST("/repository/github", Wrap(e, github))
 	e.POST("/repository/bitbucket", Wrap(e, bitbucket))
+	e.POST("/repository/gitlab", Wrap(e, gitlab))
 	// Deprecated. To be compatible with https://github.com/tmtk75/hoko
 	e.POST("/serf/event/github", Wrap(e, github))
 	e.POST("/serf/event/bitbucket", Wrap(e, bitbucket))
