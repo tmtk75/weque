@@ -10,6 +10,10 @@ import (
 	"github.com/tmtk75/weque/repository"
 )
 
+const (
+	KeySlackGitlabIconURL = "notification.slack.gitlab_icon_url"
+)
+
 type Gitlab struct {
 }
 
@@ -36,6 +40,12 @@ func (g *Gitlab) Unmarshal(r *http.Request, body []byte) (*repository.Webhook, e
 	err := json.Unmarshal(body, &glwh)
 
 	var wh repository.Webhook
+	wh.After = glwh.After
+	wh.Before = glwh.Before
+	wh.Ref = glwh.Ref
+	wh.Repository.Name = glwh.Project.Name
+	wh.Repository.Owner.Name = glwh.Project.Namespace
+	wh.Pusher.Name = glwh.UserUsername
 	return &wh, err
 }
 
@@ -44,29 +54,30 @@ func (g *Gitlab) WebhookProvider() repository.WebhookProvider {
 }
 
 func (g *Gitlab) Name() string {
-	return ""
+	return "gitlab"
 }
 
 func (g *Gitlab) IconURL() string {
-	return ""
+	return viper.GetString(KeySlackGitlabIconURL)
 }
 
 func (g *Gitlab) RepositoryURL(w *repository.Webhook) string {
-	return ""
+	return fmt.Sprintf("https://gitlab.com/%s/%s", w.Repository.Owner.Name, w.Repository.Name)
 }
 
 func (g *Gitlab) CommitURL(w *repository.Webhook) string {
-	return ""
+	return fmt.Sprintf("%s/commits/%s", g.RepositoryURL(w), w.After)
 }
 
 func (g *Gitlab) CompareURL(w *repository.Webhook) string {
-	return ""
+	return fmt.Sprintf("%s/compare/%s...%s", g.RepositoryURL(w), w.Before, w.After)
 }
 
 func (g *Gitlab) RefURL(w *repository.Webhook) string {
-	return ""
+	s := strings.Split(w.Ref, "/")
+	return fmt.Sprintf("%s/tree/%s", g.RepositoryURL(w), s[len(s)-1])
 }
 
 func (g *Gitlab) PusherURL(w *repository.Webhook) string {
-	return ""
+	return fmt.Sprintf("https://gitlab.com/%s", w.Pusher.Name)
 }
