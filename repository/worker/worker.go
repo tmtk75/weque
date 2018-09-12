@@ -57,7 +57,7 @@ func Notify(ch <-chan *Context) <-chan error {
 				out <- err
 				continue
 			}
-			log.Printf("notified: %v", e.Context.Webhook.Delivery)
+			log.Printf("notified. delivery: %v", e.Context.Webhook.Delivery)
 			out <- nil
 		}
 		close(out)

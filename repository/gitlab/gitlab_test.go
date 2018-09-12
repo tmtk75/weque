@@ -14,6 +14,7 @@ func TestGitlab(t *testing.T) {
 
 	b := &Gitlab{}
 	r := httptest.NewRequest("POST", "/", nil)
+	r.Header.Set("X-Gitlab-Event", "push hook")
 
 	w, err := b.Unmarshal(r, p)
 	assert.NoError(t, err)
@@ -24,8 +25,8 @@ func TestGitlab(t *testing.T) {
 		assert.Equal(t, false, w.Created) // always false
 		assert.Equal(t, false, w.Deleted) // always false
 		assert.Equal(t, "tmtk75", w.Pusher.Name)
-		assert.Equal(t, "", w.Event)    // always empty
-		assert.Equal(t, "", w.Delivery) // always empty
+		assert.Equal(t, "push hook", w.Event)
+		assert.Equal(t, "a delivery by gitlab", w.Delivery) // always fixed string
 		assert.Equal(t, "refs/heads/0.0.8", w.Ref)
 		assert.Equal(t, "google-sheets-sample-go", w.Repository.Name)
 		assert.Equal(t, "tmtk75", w.Repository.Owner.Name)

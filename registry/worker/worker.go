@@ -55,7 +55,7 @@ func Notify(ch <-chan *Event) <-chan error {
 				out <- err
 				continue
 			}
-			log.Printf("notified: %v", e.Event)
+			log.Printf("notified. event: %v", e.Event)
 			out <- nil
 		}
 		close(out)

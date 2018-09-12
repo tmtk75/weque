@@ -94,6 +94,6 @@ func NewHandler(h Handler, events chan<- *Context) http.HandlerFunc {
 		})()
 
 		w.Write([]byte(fmt.Sprintf("%v\n", body.Delivery)))
-		log.Printf("respond %v", body.Delivery)
+		log.Printf("respond. delivery: %v", body.Delivery)
 	}
 }

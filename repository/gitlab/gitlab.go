@@ -31,8 +31,7 @@ func (g *Gitlab) Verify(r *http.Request, body []byte) error {
 }
 
 func (g *Gitlab) IsPing(r *http.Request, body []byte) bool {
-	e := r.Header.Get("X-Gitlab-Event")
-	return strings.ToLower(e) == "push hook"
+	return false
 }
 
 func (g *Gitlab) Unmarshal(r *http.Request, body []byte) (*repository.Webhook, error) {
@@ -46,6 +45,9 @@ func (g *Gitlab) Unmarshal(r *http.Request, body []byte) (*repository.Webhook, e
 	wh.Repository.Name = glwh.Project.Name
 	wh.Repository.Owner.Name = glwh.Project.Namespace
 	wh.Pusher.Name = glwh.UserUsername
+	wh.Event = r.Header.Get("X-Gitlab-Event")
+	wh.Delivery = "a delivery by gitlab"
+
 	return &wh, err
 }
 
