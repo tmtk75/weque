@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/tmtk75/weque"
 )
 
 func List(repo string) {
@@ -56,27 +57,7 @@ func (w Webhook) Bytes() []byte {
 }
 
 func Request(method, path string, body io.Reader) (string, error) {
-	req, err := makeRequest(method, path, body)
-	if err != nil {
-		log.Print(err)
-		return "", err
-	}
-
-	c := http.Client{}
-	res, err := c.Do(req)
-	if err != nil {
-		log.Print(err)
-		return "", err
-	}
-	defer res.Body.Close()
-
-	b, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		log.Print(err)
-		return "", err
-	}
-
-	return string(b), nil
+	return weque.Request(makeRequest, method, path, body)
 }
 
 func makeRequest(method, path string, body io.Reader) (*http.Request, error) {
