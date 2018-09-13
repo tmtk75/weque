@@ -53,9 +53,20 @@ var createCmd = &cobra.Command{
 	},
 }
 
+var deleteCmd = &cobra.Command{
+	Use:   "delete [flags] <project> <hook-id>",
+	Short: "Delete the hook",
+	Long:  `create tmtk75/foobar 12345678`,
+	Args:  cobra.ExactArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		gitlab.Delete(args[0], args[1])
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(gitlabCmd)
 
 	gitlabCmd.AddCommand(listCmd)
 	gitlabCmd.AddCommand(createCmd)
+	gitlabCmd.AddCommand(deleteCmd)
 }

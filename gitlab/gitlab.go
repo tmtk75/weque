@@ -40,6 +40,16 @@ func Create(repo, uri, secret string) {
 	fmt.Println(s)
 }
 
+func Delete(repo, id string) {
+	path := fmt.Sprintf("/projects/%s/hooks/%v", url.PathEscape(repo), id)
+
+	s, err := Request("DELETE", path, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(s)
+}
+
 func Request(method, path string, body io.Reader) (string, error) {
 	return weque.Request(makeRequest, method, path, body)
 }
