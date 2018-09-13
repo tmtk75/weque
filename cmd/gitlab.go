@@ -43,8 +43,19 @@ var listCmd = &cobra.Command{
 	},
 }
 
+var createCmd = &cobra.Command{
+	Use:   "create [flags] <project> <URI> <secret>",
+	Short: "Create a new hook for the given project",
+	Long:  `create tmtk75/foobar https://example.com`,
+	Args:  cobra.ExactArgs(3),
+	Run: func(cmd *cobra.Command, args []string) {
+		gitlab.Create(args[0], args[1], args[2])
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(gitlabCmd)
 
 	gitlabCmd.AddCommand(listCmd)
+	gitlabCmd.AddCommand(createCmd)
 }

@@ -1,6 +1,7 @@
 package gitlab
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"log"
@@ -18,6 +19,21 @@ func List(repo string) {
 	path := fmt.Sprintf("/projects/%s/hooks", url.PathEscape(repo))
 	//log.Println(path)
 	s, err := Request("GET", path, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(s)
+}
+
+func Create(repo, uri, secret string) {
+	path := fmt.Sprintf("/projects/%s/hooks", url.PathEscape(repo))
+
+	d := url.Values{}
+	d.Set("url", uri)
+	d.Add("token", secret)
+
+	b := bytes.NewBufferString(d.Encode())
+	s, err := Request("POST", path, b)
 	if err != nil {
 		log.Fatal(err)
 	}
