@@ -19,9 +19,8 @@ const (
 )
 
 func NewIncomingWebhookRegistry(e *registry.Event, exiterr error) (*IncomingWebhook, error) {
-	templ := `
-{{ .Event.Target.Repository }}:{{ .Event.Target.Tag }} was pushed by {{ .Event.Actor.Name }} from {{ .Event.Request.Addr }}.
-`
+	templ := "`{{ .Event.Target.Repository }}:{{ .Event.Target.Tag }}`" +
+		` was pushed by {{ .Event.Actor.Name }} from ` + "`{{ .Event.Request.Addr }}`."
 	if s := viper.GetString(KeySlackPayloadTemplateRegistry); s != "" {
 		templ = s
 	}
@@ -56,10 +55,10 @@ func NewIncomingWebhookRegistry(e *registry.Event, exiterr error) (*IncomingWebh
 				Color:      color,
 				Text:       text.String(),
 				Fields: []Field{
-					{Title: "digest", Value: e.Target.Digest, Short: true},
-					{Title: "url", Value: e.Target.URL, Short: true},
+					//{Title: "digest", Value: e.Target.Digest, Short: true},
 					{Title: "id", Value: e.ID, Short: true},
-					{Title: "useragent", Value: e.Request.UserAgent, Short: true},
+					{Title: "url", Value: e.Target.URL, Short: true},
+					//{Title: "useragent", Value: e.Request.UserAgent, Short: true},
 				},
 			},
 		},
