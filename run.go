@@ -2,19 +2,32 @@ package weque
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"log"
 	"os/exec"
 	"time"
 
 	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 )
 
-var Stdout io.Writer = nil // for test
-var Stderr io.Writer = nil // for test
+const (
+	KeyHandlersTimeout = "handlers.timeout"
+)
+
+var (
+	Stdout io.Writer = nil // for test
+	Stderr io.Writer = nil // for test
+)
+
+func init() {
+	viper.BindEnv(KeyHandlersTimeout, "HANDLERS_TIMEOUT") // TODO: consier to reanme
+}
 
 func Run(env []string, wd, s string, args ...string) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	to := viper.GetDuration(KeyHandlersTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), to)
 	defer cancel()
 
 	cmd := exec.CommandContext(ctx, s, args...)
@@ -32,7 +45,7 @@ func Run(env []string, wd, s string, args ...string) error {
 
 	if ctx.Err() == context.DeadlineExceeded {
 		log.Printf("[cancel] %v %v %v", err, s, args)
-		return ctx.Err()
+		return errors.Wrapf(ctx.Err(), fmt.Sprintf("%v passed for %s", time.Since(now), s))
 	}
 
 	if err != nil {
