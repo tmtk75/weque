@@ -23,6 +23,7 @@ var (
 
 func init() {
 	viper.BindEnv(KeyHandlersTimeout, "HANDLERS_TIMEOUT") // TODO: consier to reanme
+	viper.SetDefault(KeyHandlersTimeout, "10s")
 }
 
 func Run(env []string, wd, s string, args ...string) error {
