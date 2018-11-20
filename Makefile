@@ -108,7 +108,7 @@ build/weque_linux_amd64.zip: build-release
 	(cd build; zip weque_linux_amd64.zip weque_linux_amd64)
 
 build/weque_linux_amd64: generate
-	GOARCH=amd64 GOOS=linux go build -o build/weque_linux_amd64 ./cmd/weque/main.go
+	GOARCH=amd64 GOOS=linux go build $(LDFLAGS) -o build/weque_linux_amd64 ./cmd/weque/main.go
 
 .PHONY: help
 help:
