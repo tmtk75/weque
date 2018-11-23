@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"text/template"
+	"time"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
@@ -25,8 +26,9 @@ head_commit:<{{ .CommitURL }}?w=1|{{ .AfterShort }}>
 ref:<{{ .RefURL }}|{{ .Repository.Owner.Name }}/{{ .Repository.Name }}:{{ .Ref }}>
 compare:<{{ .CompareURL }}|{{ .BeforeShort }}...{{ .AfterShort }}>
 pusher:<{{ .PusherURL }}|{{ .Pusher.Name }}>
-status:$status
+elapsed: {{ .ElapsedTime }}
 `
+
 	if s := viper.GetString(KeySlackPayloadTemplateRepository); s != "" {
 		templ = s
 	}
@@ -49,6 +51,7 @@ status:$status
 		PusherURL     string
 		AfterShort    string
 		BeforeShort   string
+		ElapsedTime   time.Duration
 	}{
 		Webhook:       w,
 		RepositoryURL: u.RepositoryURL(w),
@@ -58,6 +61,7 @@ status:$status
 		PusherURL:     u.PusherURL(w),
 		BeforeShort:   w.Before[0:7],
 		AfterShort:    w.After[0:7],
+		ElapsedTime:   time.Duration(time.Now().Unix()-w.Repository.PushedAt) * time.Second,
 	})
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed templating")

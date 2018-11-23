@@ -16,6 +16,7 @@ type Webhook struct {
 		Owner struct {
 			Name string `json:"name"`
 		} `json:"owner"`
+		PushedAt int64 `json:"pushed_at"`
 	} `json:"repository"`
 	Event    string `json:"event"`
 	Delivery string `json:"delivery"`
