@@ -61,7 +61,7 @@ elapsed: {{ .ElapsedTime }}
 		PusherURL:     u.PusherURL(w),
 		BeforeShort:   w.Before[0:7],
 		AfterShort:    w.After[0:7],
-		ElapsedTime:   time.Duration(time.Now().Unix()-w.Repository.PushedAt) * time.Second,
+		ElapsedTime:   time.Duration(time.Now().Unix()-ParsePushedAt(w.Repository.PushedAt)) * time.Second,
 	})
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed templating")
@@ -89,6 +89,22 @@ elapsed: {{ .ElapsedTime }}
 	}
 
 	return wh, nil
+}
+
+func ParsePushedAt(t interface{}) int64 {
+	switch v := t.(type) {
+	case int64:
+		return v
+	case int:
+		return int64(v)
+	case string:
+		a, err := time.Parse(time.RFC3339, v)
+		if err != nil {
+			return -1
+		}
+		return int64(a.Unix())
+	}
+	return 0
 }
 
 func PrintIncomingWebhookRepository(r *http.Request, path string, h repository.Handler, p repository.WebhookProvider, notify bool) {

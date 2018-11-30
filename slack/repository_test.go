@@ -27,3 +27,8 @@ func TestNewIncomingWebhookRepositoryBeforeAfter(t *testing.T) {
 	_, err = NewIncomingWebhookRepository(w, &gh.Github{}, nil)
 	assert.Error(t, err)
 }
+
+func TestParsePushedAt(t *testing.T) {
+	assert.Equal(t, int64(1543592283), ParsePushedAt(1543592283))
+	assert.Equal(t, int64(1542967808), ParsePushedAt("2018-11-23T10:10:08Z"))
+}
