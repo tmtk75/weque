@@ -48,6 +48,14 @@ gh-req2:
 		localhost:9981/ \
 		-d @github/payload.txt
 
+gh-req3:
+	curl -i \
+		-H"content-type: application/json" \
+                -H"X-GitHub-Event: release" \
+                -H"X-GitHub-Delivery: 7c385f80-f4b4-11e8-8a68-2de4c17df908" \
+		localhost:9981/repository/github \
+		-d @github/payload-published.json
+
 bb-req:
 	curl -i \
 		-H "X-Request-UUID: aabbcc" \
