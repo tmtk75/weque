@@ -2,6 +2,7 @@ package registryworker
 
 import (
 	"log"
+	"regexp"
 
 	"github.com/spf13/viper"
 	"github.com/tmtk75/weque"
@@ -40,6 +41,8 @@ func Run(events <-chan *registry.Webhook) <-chan *Event {
 
 var notifier = slack.Notify
 
+const KeySlackNotificationRegistryExclude = "notification.slack.registry.exclude"
+
 func Notify(ch <-chan *Event) <-chan error {
 	out := make(chan error)
 	go func() {
@@ -50,6 +53,14 @@ func Notify(ch <-chan *Event) <-chan error {
 				out <- err
 				continue
 			}
+
+			exclude := viper.GetString(KeySlackNotificationRegistryExclude)
+			//log.Printf("exclude: %v", exclude)
+			if exclude != "" && Exclude(e.Event, exclude) {
+				log.Printf("not notified by %v. %v", exclude, e.Event)
+				continue
+			}
+
 			if err := notifier(inwh); err != nil {
 				//log.Printf("[error] %v", err)
 				out <- err
@@ -63,4 +74,15 @@ func Notify(ch <-chan *Event) <-chan error {
 	}()
 	log.Printf("registry worker to notify started")
 	return out
+}
+
+func Exclude(e *registry.Event, restr string) bool {
+	if e == nil {
+		return true
+	}
+	re, err := regexp.Compile(restr)
+	if err != nil {
+		return true
+	}
+	return re.Match([]byte(e.Target.Repository + ":" + e.Target.Tag))
 }

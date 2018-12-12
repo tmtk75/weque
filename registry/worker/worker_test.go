@@ -38,3 +38,17 @@ func TestNotify(t *testing.T) {
 	assert.True(t, called)
 	assert.NoError(t, err)
 }
+
+func TestExclude(t *testing.T) {
+	e := &registry.Event{
+		Target: registry.Target{
+			Repository: "hello",
+			Tag:        "latest",
+		},
+	}
+	assert.True(t, Exclude(e, ":latest$"))
+	assert.False(t, Exclude(e, "^:latest$"))
+
+	assert.True(t, Exclude(nil, "^:latest$"))
+	assert.True(t, Exclude(nil, "[a")) // illegal regexp pattern
+}
