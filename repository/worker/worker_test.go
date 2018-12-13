@@ -38,3 +38,7 @@ func TestNotify(t *testing.T) {
 	assert.True(t, called)
 	assert.NoError(t, err)
 }
+
+func TestExclude(t *testing.T) {
+	// Not implemented
+}

@@ -52,6 +52,9 @@ func Notify(ch <-chan *Context) <-chan error {
 				out <- err
 				continue
 			}
+			if Exclude(e.Context.Webhook, "") {
+				continue
+			}
 			if err := notifier(inwh); err != nil {
 				//log.Printf("[error] failed to notify: %v", err)
 				out <- err
@@ -65,4 +68,8 @@ func Notify(ch <-chan *Context) <-chan error {
 	}()
 	log.Printf("repository worker to notify started")
 	return out
+}
+
+func Exclude(e *repository.Webhook, restr string) bool {
+	return false
 }
