@@ -39,6 +39,17 @@ func TestNotify(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestExcludeTarget(t *testing.T) {
+	e := &registry.Event{
+		Target: registry.Target{
+			Repository: "hello",
+			Tag:        "latest",
+		},
+	}
+	assert.Equal(t, "hello:latest", ExcludeTarget(e))
+	assert.Equal(t, "", ExcludeTarget(nil))
+}
+
 func TestExclude(t *testing.T) {
 	e := &registry.Event{
 		Target: registry.Target{

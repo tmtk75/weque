@@ -55,9 +55,9 @@ func Notify(ch <-chan *Event) <-chan error {
 			}
 
 			exclude := viper.GetString(KeySlackNotificationRegistryExclude)
-			//log.Printf("exclude: %v", exclude)
+			log.Printf("may be excluded by %v", exclude)
 			if exclude != "" && Exclude(e.Event, exclude) {
-				log.Printf("not notified by %v. %v", exclude, e.Event)
+				log.Printf("not notified to slack for %v of %v", ExcludeTarget(e.Event), e.Event.ID)
 				continue
 			}
 
@@ -76,6 +76,13 @@ func Notify(ch <-chan *Event) <-chan error {
 	return out
 }
 
+func ExcludeTarget(e *registry.Event) string {
+	if e == nil {
+		return ""
+	}
+	return e.Target.Repository + ":" + e.Target.Tag
+}
+
 func Exclude(e *registry.Event, restr string) bool {
 	if e == nil {
 		return true
@@ -84,5 +91,5 @@ func Exclude(e *registry.Event, restr string) bool {
 	if err != nil {
 		return true
 	}
-	return re.Match([]byte(e.Target.Repository + ":" + e.Target.Tag))
+	return re.Match([]byte(ExcludeTarget(e)))
 }
