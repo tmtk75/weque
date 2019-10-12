@@ -7,6 +7,8 @@ require (
 	github.com/hashicorp/hcl v0.0.0-20171017181929-23c074d0eceb
 	github.com/inconshreveable/mousetrap v1.0.0
 	github.com/jessevdk/go-assets v0.0.0-20160921144138-4f4301a06e15
+	github.com/jessevdk/go-assets-builder v0.0.0-20130903091706-b8483521738f // indirect
+	github.com/jessevdk/go-flags v1.4.0 // indirect
 	github.com/labstack/echo v3.3.4+incompatible
 	github.com/labstack/gommon v0.0.0-20180312174116-6fe1405d73ec
 	github.com/magiconair/properties v1.7.6
@@ -30,3 +32,5 @@ require (
 	golang.org/x/text v0.3.0
 	gopkg.in/yaml.v2 v2.1.1
 )
+
+go 1.13

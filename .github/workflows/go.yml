@@ -1,0 +1,60 @@
+name: Go
+on: [push]
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v1
+
+    - name: Get dependencies
+      run: |
+        go get -v -t -d ./...
+        if [ -f Gopkg.toml ]; then
+            curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+            dep ensure
+        fi
+
+    - name: github.com/jessevdk/go-assets-builder
+      run: |
+       GO111MODULE=off go get -u github.com/jessevdk/go-assets-builder
+       GO111MODULE=off go install github.com/jessevdk/go-assets-builder
+       ls ~/go/bin
+
+    - name: Build
+      shell: bash
+      run: |
+        export PATH=${PATH}:~/go/bin
+        make build-release
+
+    - name: Save
+      uses: actions/upload-artifact@master
+      with:
+        name: weque-build
+        path: build
+
+  release:
+    needs: [build]
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: actions/download-artifact@master
+      with:
+        name: weque-build
+        path: build
+
+    - name: Check
+      run: |
+        chmod +x ./build/weque_linux_amd64
+        ./build/weque_linux_amd64
+
